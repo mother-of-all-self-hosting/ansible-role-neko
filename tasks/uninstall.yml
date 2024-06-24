@@ -1,0 +1,23 @@
+---
+
+- name: Check existence of neko systemd service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ neko_identifier }}.service"
+  register: neko_service_stat
+
+- when: neko_service_stat.stat.exists | bool
+  block:
+    - name: Ensure neko service is stopped
+      ansible.builtin.service:
+        name: "{{ neko_identifier }}"
+        state: stopped
+        daemon_reload: true
+    - name: Ensure neko service doesn't exist
+      ansible.builtin.file:
+        dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ neko_identifier }}.service"
+        state: absent
+
+    - name: Ensure neko base path is files deleted (make sure to delete node data)
+      ansible.builtin.file:
+        path: "{{ neko_base_path }}"
+        state: absent
