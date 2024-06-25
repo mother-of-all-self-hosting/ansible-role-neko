@@ -1,5 +1,5 @@
 [Unit]
-Description=neko ActivityPub Server ({{ neko_identifier }})
+Description=neko virtual browser ({{ neko_identifier }})
 {% for service in neko_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
@@ -18,14 +18,14 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
                 --rm \
                 --name={{ neko_identifier }} \
                 --log-driver=none \
-                --user={{ neko_uid }}:{{ neko_gid }} \
+                --shm-size 2gb \
+                -p {{ neko_epr }}:{{ neko_epr }}/udp \
                 {% if neko_container_http_host_bind_port %}
                 -p {{ neko_container_http_host_bind_port }}:{{ neko_container_http_port }} \
                 {% endif %}
                 --label-file={{ neko_base_path }}/labels \
                 --network={{ neko_container_network }} \
                 --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
-                --read-only \
                 --env-file={{ neko_base_path }}/env \
                 {{ neko_container_image }}
 

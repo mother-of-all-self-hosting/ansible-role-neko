@@ -12,7 +12,7 @@ neko_password: ''
 neko_password_admin: ''
 neko_epr: '52000-52100'
 neko_icelite: '1'
-
+neko_ipfetch: ''
 
 neko_uid: ''
 neko_gid: ''
