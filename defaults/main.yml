@@ -72,12 +72,12 @@ neko_container_additional_networks_custom: []
 # You can use this to further influence the default configuration.
 #
 # Example:
-# neko_environment_variables_extension: |
+# neko_environment_variables_additional_variables: |
 #   neko_STORAGE_BACKEND=s3
 #   neko_STORAGE_S3_ENDPOINT=minio:9000
 #   neko_STORAGE_S3_BUCKET=something
 #   neko_STORAGE_S3_SECRET_KEY=verysecret
-neko_environment_variables_extension: ''
+neko_environment_variables_additional_variables: ''
 
 # neko_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `roles/custom/neko_neko/templates/labels.j2` for details.
