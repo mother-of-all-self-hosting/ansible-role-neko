@@ -16,6 +16,7 @@ neko_identifier: neko
 # renovate: datasource=docker depName=ghcr.io/m1k1o/neko/firefox
 neko_version: 3.0.5
 
+# The hostname at which Neko is served.
 neko_hostname: ''
 
 neko_screen: '1920x1080@30'
@@ -30,11 +31,13 @@ neko_gid: ''
 
 neko_base_path: "/{{ neko_identifier }}"
 
+# List of systemd services that the Neko systemd service depends on
 neko_systemd_required_services_list: "{{ neko_systemd_required_services_list_default + neko_systemd_required_services_list_auto + neko_systemd_required_services_list_custom }}"
 neko_systemd_required_services_list_default: ['docker.service']
 neko_systemd_required_services_list_auto: []
 neko_systemd_required_services_list_custom: []
 
+# List of systemd services that the Neko systemd service wants
 neko_systemd_wanted_services_list: "{{ neko_systemd_wanted_services_list_default + neko_systemd_wanted_services_list_auto + neko_systemd_wanted_services_list_custom }}"
 neko_systemd_wanted_services_list_default: []
 neko_systemd_wanted_services_list_auto: []
@@ -47,6 +50,7 @@ neko_container_image_registry_prefix_upstream: "{{ neko_container_image_registry
 neko_container_image_registry_prefix_upstream_default: ghcr.io/
 neko_container_image_force_pull: "{{ neko_container_image.endswith(':latest') }}"
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
 neko_container_network: '{{ neko_identifier }}'
 
 # The port number in the container
