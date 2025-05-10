@@ -4,7 +4,7 @@
 
 ---
 
-- name: Ensure neko user registered - {{ user.username | quote }}
+- name: Ensure Neko user registered - {{ user.username | quote }}
   ansible.builtin.command:
     cmd: |-
       {{ devture_systemd_docker_base_host_command_docker }} exec {{ neko_identifier }}
@@ -16,7 +16,7 @@
   changed_when: neko_create_account_result.rc == 0 and 'is already in use' not in neko_create_account_result.stderr
   failed_when: neko_create_account_result.rc > 0 and 'is already in use' not in neko_create_account_result.stderr
 
-- name: Ensure neko user is promoted - {{ user.username | quote }}
+- name: Ensure Neko user is promoted - {{ user.username | quote }}
   ansible.builtin.command:
     cmd: |-
       {{ devture_systemd_docker_base_host_command_docker }} exec {{ neko_identifier }}

@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
 [Unit]
-Description=neko virtual browser ({{ neko_identifier }})
+Description=Neko virtual browser ({{ neko_identifier }})
 {% for service in neko_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}

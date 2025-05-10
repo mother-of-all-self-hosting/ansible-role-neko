@@ -5,7 +5,7 @@
 
 ---
 
-- name: Ensure neko path exists
+- name: Ensure Neko path exists
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -15,7 +15,7 @@
   with_items:
     - {path: "{{ neko_base_path }}", when: true}
 
-- name: Ensure neko traefik labels are installed
+- name: Ensure Neko traefik labels are installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ neko_base_path }}/labels"
@@ -23,7 +23,7 @@
     group: "{{ neko_gid }}"
     mode: 0640
 
-- name: Ensure neko configuration is deployed
+- name: Ensure Neko configuration is deployed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/env.j2"
     dest: "{{ neko_base_path }}/env"
@@ -31,14 +31,14 @@
     group: "{{ neko_gid }}"
     mode: 0640
 
-- name: Ensure neko container image is pulled
+- name: Ensure Neko container image is pulled
   community.docker.docker_image:
     name: "{{ neko_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ neko_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else neko_container_image_force_pull }}"
 
-- name: Ensure neko container network is created
+- name: Ensure Neko container network is created
   community.docker.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ neko_container_network }}"
