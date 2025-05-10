@@ -25,15 +25,15 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
                 --rm \
                 --name={{ neko_identifier }} \
                 --log-driver=none \
-                --shm-size 2gb \
+                --network={{ neko_container_network }} \
                 -p {{ neko_epr }}:{{ neko_epr }}/udp \
                 {% if neko_container_http_host_bind_port %}
                 -p {{ neko_container_http_host_bind_port }}:{{ neko_container_http_port }} \
                 {% endif %}
-                --label-file={{ neko_base_path }}/labels \
-                --network={{ neko_container_network }} \
-                --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
                 --env-file={{ neko_base_path }}/env \
+                --label-file={{ neko_base_path }}/labels \
+                --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+                --shm-size 2gb \
                 {{ neko_container_image }}
 
 {% for network in neko_container_additional_networks %}
