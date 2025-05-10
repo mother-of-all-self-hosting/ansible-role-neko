@@ -1,4 +1,5 @@
 ---
+
 - name: Ensure neko user registered - {{ user.username | quote }}
   ansible.builtin.command:
     cmd: |-

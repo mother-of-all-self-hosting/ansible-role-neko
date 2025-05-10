@@ -37,6 +37,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ neko_identifier }} 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ neko_identifier }} 2>/dev/null || true'
+
 Restart=always
 RestartSec=30
 SyslogIdentifier={{ neko_identifier }}

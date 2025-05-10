@@ -31,8 +31,6 @@ neko_systemd_wanted_services_list_default: []
 neko_systemd_wanted_services_list_auto: []
 neko_systemd_wanted_services_list_custom: []
 
-
-
 neko_container_image: "{{ neko_container_image_registry_prefix }}m1k1o/neko:{{ neko_container_image_tag }}"
 neko_container_image_registry_prefix: docker.io/
 neko_container_image_tag: "{{ neko_version }}"
@@ -82,7 +80,6 @@ neko_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 neko_container_labels_traefik_additional_request_headers: "{{ neko_container_labels_traefik_additional_request_headers_auto | combine(neko_container_labels_traefik_additional_request_headers_custom) }}"
 neko_container_labels_traefik_additional_request_headers_auto: {}
 neko_container_labels_traefik_additional_request_headers_custom: {}
-
 
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own custom response headers, use `neko_container_labels_traefik_additional_response_headers_custom`
@@ -144,7 +141,6 @@ neko_floc_optout_enabled: true
 # - https://hstspreload.org/#opt-in
 # See: `neko_http_header_strict_transport_security`
 neko_hsts_preload_enabled: false
-
 
 # neko_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `roles/custom/collabora_online/templates/labels.j2` for details.
