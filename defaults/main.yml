@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
+# SPDX-FileCopyrightText: 2025 MASH project contributors
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/m1k1o/neko
 
@@ -32,8 +41,10 @@ neko_systemd_wanted_services_list_auto: []
 neko_systemd_wanted_services_list_custom: []
 
 neko_container_image: "{{ neko_container_image_registry_prefix }}m1k1o/neko:{{ neko_container_image_tag }}"
-neko_container_image_registry_prefix: docker.io/
 neko_container_image_tag: "{{ neko_version }}"
+neko_container_image_registry_prefix: "{{ neko_container_image_registry_prefix_upstream }}"
+neko_container_image_registry_prefix_upstream: "{{ neko_container_image_registry_prefix_upstream_default }}"
+neko_container_image_registry_prefix_upstream_default: docker.io/
 neko_container_image_force_pull: "{{ neko_container_image.endswith(':latest') }}"
 
 neko_container_network: '{{ neko_identifier }}'
