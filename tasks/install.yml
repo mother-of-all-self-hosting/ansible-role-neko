@@ -35,6 +35,8 @@
   community.docker.docker_image:
     name: "{{ neko_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ neko_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else neko_container_image_force_pull }}"
 
 - name: Ensure neko container network is created
   community.docker.docker_network:
