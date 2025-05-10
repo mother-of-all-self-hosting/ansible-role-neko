@@ -3,6 +3,7 @@
 neko_enabled: true
 neko_identifier: neko
 
+# renovate: datasource=docker depName=m1k1o/neko
 neko_version: 'firefox'
 
 neko_hostname: ''
