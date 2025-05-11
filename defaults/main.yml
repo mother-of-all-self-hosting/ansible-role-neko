@@ -149,9 +149,27 @@ neko_systemd_wanted_services_list_auto: []
 neko_systemd_wanted_services_list_custom: []
 
 neko_environment_variables_neko_desktop_screen: '1920x1080@30'
+
+# Specify the value for Member Providers.
+# Valid values: multiuser, file, object, noauth
+# See: https://neko.m1k1o.net/docs/v3/configuration/authentication#member
 neko_environment_variables_neko_member_provider: multiuser
+
+# Specify password for admins.
 neko_environment_variables_neko_member_multiuser_user_password: ''
+
+# Specify password for regular users.
 neko_environment_variables_neko_member_multiuser_admin_password: ''
+
+# Specify the absolute path to the file which contains users and their passwords.
+neko_environment_variables_neko_member_file_path: ''
+
+# Specify whether the passwords are hashed with SHA256 or not.
+neko_environment_variables_neko_member_file_hash: false
+
+# Specify list of users with their passwords and profiles in JSON encoded array.
+neko_environment_variables_neko_member_object_users: ''
+
 neko_environment_variables_neko_webrtc_epr: '52000-52100'
 neko_environment_variables_neko_webrtc_icelite: '1'
 neko_environment_variables_neko_webrtc_ip_retrieval_url: ''

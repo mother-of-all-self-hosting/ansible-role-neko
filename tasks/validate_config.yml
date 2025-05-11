@@ -30,6 +30,4 @@
     - neko_uid
     - neko_gid
     - neko_hostname
-    - neko_environment_variables_neko_member_multiuser_user_password
-    - neko_environment_variables_neko_member_multiuser_admin_password
     - neko_container_network
