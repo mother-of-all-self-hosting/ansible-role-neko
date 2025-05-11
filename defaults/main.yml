@@ -154,6 +154,10 @@ neko_environment_variables_neko_desktop_screen: '1920x1080@30'
 # See: https://neko.m1k1o.net/docs/v3/configuration/desktop#unminimize
 neko_environment_variables_neko_desktop_unminimize: false
 
+# Specify whether to enable the upload drop feature.
+# See: https://neko.m1k1o.net/docs/v3/configuration/desktop#upload_drop
+neko_environment_variables_neko_desktop_upload_drop: false
+
 # Specify the value for Member Providers.
 # Valid values: multiuser, file, object, noauth
 # See: https://neko.m1k1o.net/docs/v3/configuration/authentication#member
