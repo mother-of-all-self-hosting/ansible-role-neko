@@ -170,6 +170,10 @@ neko_environment_variables_neko_member_file_hash: false
 # Specify list of users with their passwords and profiles in JSON encoded array.
 neko_environment_variables_neko_member_object_users: ''
 
+# Specify a file path to store a session.
+# See: https://neko.m1k1o.net/docs/v3/configuration/authentication#session
+neko_environment_variables_neko_session_file: ''
+
 neko_environment_variables_neko_webrtc_epr: '52000-52100'
 neko_environment_variables_neko_webrtc_icelite: '1'
 neko_environment_variables_neko_webrtc_ip_retrieval_url: ''
