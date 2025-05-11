@@ -148,13 +148,13 @@ neko_systemd_wanted_services_list_default: []
 neko_systemd_wanted_services_list_auto: []
 neko_systemd_wanted_services_list_custom: []
 
-neko_screen: '1920x1080@30'
+neko_environment_variables_neko_desktop_screen: '1920x1080@30'
 neko_environment_variables_neko_member_provider: multiuser
-neko_password: ''
-neko_password_admin: ''
-neko_epr: '52000-52100'
-neko_icelite: '1'
-neko_ipfetch: ''
+neko_environment_variables_neko_member_multiuser_user_password: ''
+neko_environment_variables_neko_member_multiuser_admin_password: ''
+neko_environment_variables_neko_webrtc_epr: '52000-52100'
+neko_environment_variables_neko_webrtc_icelite: '1'
+neko_environment_variables_neko_webrtc_ip_retrieval_url: ''
 
 # Additional environment variables to pass to the Neko container.
 # You can use this to further influence the default configuration.
