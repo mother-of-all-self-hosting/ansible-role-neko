@@ -2,7 +2,7 @@ galaxy_info:
   role_name: neko
   author: Julian-Samuel Gebühr
   company: Hyteck
-  description: Ansible role to install Neko, a self-hosted ActivityPub social network server.
+  description: Ansible role to install Neko, a self-hosted virtual browser on WebRTC.
   platforms:
     - name: Debian
       versions:
