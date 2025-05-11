@@ -13,8 +13,8 @@
 neko_enabled: true
 neko_identifier: neko
 
-# renovate: datasource=docker depName=m1k1o/neko
-neko_version: 'firefox'
+# renovate: datasource=docker depName=ghcr.io/m1k1o/neko
+neko_version: 3.0.5
 
 neko_hostname: ''
 
@@ -40,11 +40,11 @@ neko_systemd_wanted_services_list_default: []
 neko_systemd_wanted_services_list_auto: []
 neko_systemd_wanted_services_list_custom: []
 
-neko_container_image: "{{ neko_container_image_registry_prefix }}m1k1o/neko:{{ neko_container_image_tag }}"
-neko_container_image_tag: "{{ neko_version }}"
+neko_container_image: "{{ neko_container_image_registry_prefix }}m1k1o/neko/{{ neko_container_image_tag }}"
+neko_container_image_tag: "firefox:{{ neko_version }}"
 neko_container_image_registry_prefix: "{{ neko_container_image_registry_prefix_upstream }}"
 neko_container_image_registry_prefix_upstream: "{{ neko_container_image_registry_prefix_upstream_default }}"
-neko_container_image_registry_prefix_upstream_default: docker.io/
+neko_container_image_registry_prefix_upstream_default: ghcr.io/
 neko_container_image_force_pull: "{{ neko_container_image.endswith(':latest') }}"
 
 neko_container_network: '{{ neko_identifier }}'
