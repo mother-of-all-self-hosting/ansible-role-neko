@@ -11,37 +11,18 @@
 # Project source code URL: https://github.com/m1k1o/neko
 
 neko_enabled: true
+
 neko_identifier: neko
+neko_base_path: "/{{ neko_identifier }}"
 
 # renovate: datasource=docker depName=ghcr.io/m1k1o/neko/firefox
 neko_version: 3.0.5
 
-# The hostname at which Neko is served.
-neko_hostname: ''
-
-neko_screen: '1920x1080@30'
-neko_password: ''
-neko_password_admin: ''
-neko_epr: '52000-52100'
-neko_icelite: '1'
-neko_ipfetch: ''
-
 neko_uid: ''
 neko_gid: ''
 
-neko_base_path: "/{{ neko_identifier }}"
-
-# List of systemd services that the Neko systemd service depends on
-neko_systemd_required_services_list: "{{ neko_systemd_required_services_list_default + neko_systemd_required_services_list_auto + neko_systemd_required_services_list_custom }}"
-neko_systemd_required_services_list_default: ['docker.service']
-neko_systemd_required_services_list_auto: []
-neko_systemd_required_services_list_custom: []
-
-# List of systemd services that the Neko systemd service wants
-neko_systemd_wanted_services_list: "{{ neko_systemd_wanted_services_list_default + neko_systemd_wanted_services_list_auto + neko_systemd_wanted_services_list_custom }}"
-neko_systemd_wanted_services_list_default: []
-neko_systemd_wanted_services_list_auto: []
-neko_systemd_wanted_services_list_custom: []
+# The hostname at which Neko is served.
+neko_hostname: ''
 
 neko_container_image: "{{ neko_container_image_registry_prefix }}m1k1o/neko/{{ neko_container_image_tag }}"
 neko_container_image_tag: "firefox:{{ neko_version }}"
@@ -50,16 +31,16 @@ neko_container_image_registry_prefix_upstream: "{{ neko_container_image_registry
 neko_container_image_registry_prefix_upstream_default: ghcr.io/
 neko_container_image_force_pull: "{{ neko_container_image.endswith(':latest') }}"
 
+# Controls whether the Neko container exposes its HTTP port (as defined by `neko_container_http_port`).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8731"), or empty string to not expose.
+neko_container_http_host_bind_port: ""
+
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 neko_container_network: '{{ neko_identifier }}'
 
 # The port number in the container
 neko_container_http_port: 8080
-
-# Controls whether the Neko container exposes its HTTP port (as defined by `neko_container_http_port`).
-#
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8731"), or empty string to not expose.
-neko_container_http_host_bind_port: ""
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
@@ -67,17 +48,6 @@ neko_container_http_host_bind_port: ""
 neko_container_additional_networks: "{{ neko_container_additional_networks_auto + neko_container_additional_networks_custom }}"
 neko_container_additional_networks_auto: []
 neko_container_additional_networks_custom: []
-
-# Additional environment variables to pass to the Neko container.
-# You can use this to further influence the default configuration.
-#
-# Example:
-# neko_environment_variables_additional_variables: |
-#   neko_STORAGE_BACKEND=s3
-#   neko_STORAGE_S3_ENDPOINT=minio:9000
-#   neko_STORAGE_S3_BUCKET=something
-#   neko_STORAGE_S3_SECRET_KEY=verysecret
-neko_environment_variables_additional_variables: ''
 
 # neko_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `roles/custom/neko_neko/templates/labels.j2` for details.
@@ -109,6 +79,15 @@ neko_container_labels_traefik_additional_response_headers_auto: |
     | combine ({'Strict-Transport-Security': neko_http_header_strict_transport_security} if neko_http_header_strict_transport_security and neko_container_labels_traefik_tls else {})
   }}
 neko_container_labels_traefik_additional_response_headers_custom: {}
+
+# neko_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# neko_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+neko_container_labels_additional_labels: ''
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
@@ -157,11 +136,32 @@ neko_floc_optout_enabled: true
 # See: `neko_http_header_strict_transport_security`
 neko_hsts_preload_enabled: false
 
-# neko_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
-# See `../templates/labels.j2` for details.
+# List of systemd services that the Neko systemd service depends on
+neko_systemd_required_services_list: "{{ neko_systemd_required_services_list_default + neko_systemd_required_services_list_auto + neko_systemd_required_services_list_custom }}"
+neko_systemd_required_services_list_default: ['docker.service']
+neko_systemd_required_services_list_auto: []
+neko_systemd_required_services_list_custom: []
+
+# List of systemd services that the Neko systemd service wants
+neko_systemd_wanted_services_list: "{{ neko_systemd_wanted_services_list_default + neko_systemd_wanted_services_list_auto + neko_systemd_wanted_services_list_custom }}"
+neko_systemd_wanted_services_list_default: []
+neko_systemd_wanted_services_list_auto: []
+neko_systemd_wanted_services_list_custom: []
+
+neko_screen: '1920x1080@30'
+neko_password: ''
+neko_password_admin: ''
+neko_epr: '52000-52100'
+neko_icelite: '1'
+neko_ipfetch: ''
+
+# Additional environment variables to pass to the Neko container.
+# You can use this to further influence the default configuration.
 #
 # Example:
-# neko_container_labels_additional_labels: |
-#   my.label=1
-#   another.label="here"
-neko_container_labels_additional_labels: ''
+# neko_environment_variables_additional_variables: |
+#   neko_STORAGE_BACKEND=s3
+#   neko_STORAGE_S3_ENDPOINT=minio:9000
+#   neko_STORAGE_S3_BUCKET=something
+#   neko_STORAGE_S3_SECRET_KEY=verysecret
+neko_environment_variables_additional_variables: ''
