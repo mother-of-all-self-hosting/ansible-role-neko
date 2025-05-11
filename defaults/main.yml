@@ -149,6 +149,7 @@ neko_systemd_wanted_services_list_auto: []
 neko_systemd_wanted_services_list_custom: []
 
 neko_screen: '1920x1080@30'
+neko_environment_variables_neko_member_provider: multiuser
 neko_password: ''
 neko_password_admin: ''
 neko_epr: '52000-52100'
