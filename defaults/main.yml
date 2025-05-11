@@ -150,6 +150,10 @@ neko_systemd_wanted_services_list_custom: []
 
 neko_environment_variables_neko_desktop_screen: '1920x1080@30'
 
+# Specify whether to enable the unminimize feature.
+# See: https://neko.m1k1o.net/docs/v3/configuration/desktop#unminimize
+neko_environment_variables_neko_desktop_unminimize: false
+
 # Specify the value for Member Providers.
 # Valid values: multiuser, file, object, noauth
 # See: https://neko.m1k1o.net/docs/v3/configuration/authentication#member
