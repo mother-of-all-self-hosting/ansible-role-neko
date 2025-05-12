@@ -15,21 +15,16 @@
   with_items:
     - {path: "{{ neko_base_path }}", when: true}
 
-- name: Ensure Neko traefik labels are installed
+- name: Ensure Neko support files installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/labels.j2"
-    dest: "{{ neko_base_path }}/labels"
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ neko_base_path }}/{{ item }}"
+    mode: "0640"
     owner: "{{ neko_uid }}"
     group: "{{ neko_gid }}"
-    mode: 0640
-
-- name: Ensure Neko configuration is deployed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/env.j2"
-    dest: "{{ neko_base_path }}/env"
-    owner: "{{ neko_uid }}"
-    group: "{{ neko_gid }}"
-    mode: 0640
+  with_items:
+    - env
+    - labels
 
 - name: Ensure Neko container image is pulled
   community.docker.docker_image:
