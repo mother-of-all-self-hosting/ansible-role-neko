@@ -7,13 +7,13 @@
 
 - name: Ensure Neko path exists
   ansible.builtin.file:
-    path: "{{ item.path }}"
+    path: "{{ item }}"
     state: directory
     mode: 0700
     owner: "{{ neko_uid }}"
     group: "{{ neko_gid }}"
   with_items:
-    - {path: "{{ neko_base_path }}", when: true}
+    - "{{ neko_base_path }}"
 
 - name: Ensure Neko support files installed
   ansible.builtin.template:
@@ -40,7 +40,7 @@
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
-- name: Ensure neko.service installed
+- name: Ensure Neko systemd service is present
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/neko.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ neko_identifier }}.service"
