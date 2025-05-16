@@ -57,7 +57,7 @@ neko_container_additional_networks_custom: []
 neko_container_additional_volumes: []
 
 # neko_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
-# See `roles/custom/neko_neko/templates/labels.j2` for details.
+# See `../templates/labels.j2` for details.
 #
 # To inject your own other container labels, see `neko_container_labels_additional_labels`.
 neko_container_labels_traefik_enabled: false
