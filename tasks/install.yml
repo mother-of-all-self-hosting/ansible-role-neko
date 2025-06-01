@@ -4,12 +4,11 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 - name: Ensure Neko path exists
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0700
+    mode: "0700"
     owner: "{{ neko_uid }}"
     group: "{{ neko_gid }}"
   with_items:
@@ -19,7 +18,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ neko_base_path }}/{{ item }}"
-    mode: 0640
+    mode: "0640"
     owner: "{{ neko_uid }}"
     group: "{{ neko_gid }}"
   with_items:
@@ -48,4 +47,4 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/neko.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ neko_identifier }}.service"
-    mode: 0644
+    mode: "0644"

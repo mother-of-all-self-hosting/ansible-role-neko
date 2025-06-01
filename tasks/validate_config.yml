@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 - name: (Deprecation) Catch and report renamed settings
   ansible.builtin.fail:
     msg: >-
@@ -13,13 +12,13 @@
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
   when: "item.old in vars"
   with_items:
-    - {'old': 'neko_environment_variables_extension', 'new': 'neko_environment_variables_additional_variables'}
-    - {'old': 'neko_screen', 'new': 'neko_environment_variables_neko_desktop_screen'}
-    - {'old': 'neko_password', 'new': 'neko_environment_variables_neko_member_multiuser_user_password'}
-    - {'old': 'neko_password_admin', 'new': 'neko_environment_variables_neko_member_multiuser_admin_password'}
-    - {'old': 'neko_epr', 'new': 'neko_environment_variables_neko_webrtc_epr'}
-    - {'old': 'neko_icelite', 'new': 'neko_environment_variables_neko_webrtc_icelite'}
-    - {'old': 'neko_ipfetch', 'new': 'neko_environment_variables_neko_webrtc_ip_retrieval_url'}
+    - { "old": "neko_environment_variables_extension", "new": "neko_environment_variables_additional_variables" }
+    - { "old": "neko_screen", "new": "neko_environment_variables_neko_desktop_screen" }
+    - { "old": "neko_password", "new": "neko_environment_variables_neko_member_multiuser_user_password" }
+    - { "old": "neko_password_admin", "new": "neko_environment_variables_neko_member_multiuser_admin_password" }
+    - { "old": "neko_epr", "new": "neko_environment_variables_neko_webrtc_epr" }
+    - { "old": "neko_icelite", "new": "neko_environment_variables_neko_webrtc_icelite" }
+    - { "old": "neko_ipfetch", "new": "neko_environment_variables_neko_webrtc_ip_retrieval_url" }
 
 - name: Fail if required Neko settings not defined
   ansible.builtin.fail:

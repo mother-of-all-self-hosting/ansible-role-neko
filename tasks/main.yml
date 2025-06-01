@@ -4,27 +4,25 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 - name: Perform Neko installation tasks
-  block:
-    - name: Validate Neko configuration
-      when: neko_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-
-    - name: Install Neko
-      when: neko_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
   tags:
     - setup-all
     - setup-neko
     - install-all
     - install-neko
+  block:
+    - name: Validate Neko configuration
+      when: neko_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - name: Install Neko
+      when: neko_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
 - name: Perform Neko uninstallation tasks
+  tags:
+    - setup-all
+    - setup-neko
   block:
     - name: Uninstall Neko
       when: not neko_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
-  tags:
-    - setup-all
-    - setup-neko

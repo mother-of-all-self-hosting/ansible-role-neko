@@ -4,13 +4,13 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 - name: Check existence of Neko systemd service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/{{ neko_identifier }}.service"
   register: neko_service_stat
 
-- when: neko_service_stat.stat.exists | bool
+- name: Uninstall Neko systemd services and files
+  when: neko_service_stat.stat.exists | bool
   block:
     - name: Ensure Neko systemd service is stopped
       ansible.builtin.service:

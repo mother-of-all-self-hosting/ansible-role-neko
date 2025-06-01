@@ -28,7 +28,7 @@ See the project's [documentation](https://neko.m1k1o.net/docs/v3/introduction) t
 
 ## Prerequisites
 
-To use the service, by default you need to open ports `56000-56100/udp` of the host. See [here](https://neko.m1k1o.net/docs/v3/configuration/webrtc#epr) for details.
+To use the service, by default you need to open ports `56000-56100/udp` of the host. See [this section](https://neko.m1k1o.net/docs/v3/configuration/webrtc#epr) on the official documentation for details.
 
 ## Adjusting the playbook configuration
 
@@ -80,7 +80,7 @@ neko_environment_variables_neko_member_multiuser_user_password: USER_PASSWORD_HE
 
 #### Use another authentication method (optional)
 
-You can change the authentication method by setting `neko_environment_variables_neko_member_provider`. See [here](https://neko.m1k1o.net/docs/v3/configuration/authentication#member) on the official documentation for the available methods.
+You can change the authentication method by setting `neko_environment_variables_neko_member_provider`. See [this section](https://neko.m1k1o.net/docs/v3/configuration/authentication#member) on the official documentation for the available methods.
 
 ### Select an application (optional)
 
@@ -92,7 +92,7 @@ neko_container_image_tag: "kde:{{ neko_version }}"
 
 By default, the instance is set to use Firefox as the application.
 
-See [here](https://neko.m1k1o.net/docs/v3/installation/docker-images#apps) for the list of available applications.
+See [this page](https://neko.m1k1o.net/docs/v3/installation/docker-images#apps) of the official documentation for the list of available applications.
 
 ### Extending the configuration
 
