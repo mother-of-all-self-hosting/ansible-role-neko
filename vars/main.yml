@@ -1,6 +1,0 @@
-# SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
-#
-# SPDX-License-Identifier: AGPL-3.0-or-later
-
----
-neko_users: "{{ neko_users_auto + neko_users_additional }}"
