@@ -1,6 +1,7 @@
 {#
 SPDX-FileCopyrightText: 2023 Slavi Pantaleev
 SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -21,11 +22,19 @@ Type=simple
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ neko_identifier }} 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ neko_identifier }} 2>/dev/null || true'
 
+{#
+  --cap-add=SYS_ADMIN is required for the Chromium-based browsers available for Neko
+  See: https://neko.m1k1o.net/docs/v3/installation/docker-images#chromium-based-browsers
+#}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --rm \
       --name={{ neko_identifier }} \
       --log-driver=none \
       --network={{ neko_container_network }} \
+      {% if neko_container_image_app in ['chromium', 'google-chrome', 'ungoogled-chromium', 'microsoft-edge', 'brave', 'vivaldi', 'opera'] %}
+      --cap-add=SYS_ADMIN \
+      --shm-size=2g \
+      {% endif %}
       -p {{ neko_environment_variables_neko_webrtc_epr }}:{{ neko_environment_variables_neko_webrtc_epr }}/udp \
       {% if neko_container_http_host_bind_port %}
       -p {{ neko_container_http_host_bind_port }}:{{ neko_container_http_port }} \
@@ -36,8 +45,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
       {% endfor %}
       --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
-      --shm-size 2gb \
-      {{ neko_container_image }}
+      {{ neko_container_image_self_build_name if neko_container_image_self_build else neko_container_image }}
 
 {% for network in neko_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ neko_identifier }}

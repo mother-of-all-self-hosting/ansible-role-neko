@@ -87,12 +87,16 @@ You can change the authentication method by setting `neko_environment_variables_
 There are multiple applications available to use on the Neko's instance. For example, by adding the following configuration to your `vars.yml` file you can set up KDE desktop environment in a container where you can run multiple applications:
 
 ```yaml
-neko_container_image_tag: "kde:{{ neko_version }}"
+neko_container_image_app: "kde"
 ```
 
 By default, the instance is set to use Firefox as the application.
 
 See [this page](https://neko.m1k1o.net/docs/v3/installation/docker-images#apps) of the official documentation for the list of available applications.
+
+>[!WARNING]
+>
+> Setting a Chromium-based browser modifies shared memory size to 2 GB and enables `--cap-add=SYS_ADMIN`. See [this page](https://www.redhat.com/en/blog/container-tidbits-adding-capabilities-container) for the security implication of enabling it.
 
 ### Extending the configuration
 

@@ -24,12 +24,24 @@ neko_gid: ''
 # The hostname at which Neko is served.
 neko_hostname: ''
 
+# Warning: setting the Chromium-based browser available for Neko enables SYS_ADMIN capability
+# See: https://neko.m1k1o.net/docs/v3/installation/docker-images#chromium-based-browsers
+neko_container_image_app: "firefox"
+
 neko_container_image: "{{ neko_container_image_registry_prefix }}m1k1o/neko/{{ neko_container_image_tag }}"
-neko_container_image_tag: "firefox:{{ neko_version }}"
+neko_container_image_tag: "{{ neko_container_image_app }}:{{ neko_version }}"
 neko_container_image_registry_prefix: "{{ neko_container_image_registry_prefix_upstream }}"
 neko_container_image_registry_prefix_upstream: "{{ neko_container_image_registry_prefix_upstream_default }}"
 neko_container_image_registry_prefix_upstream_default: ghcr.io/
 neko_container_image_force_pull: "{{ neko_container_image.endswith(':latest') }}"
+
+neko_container_image_self_build: false
+neko_container_image_self_build_name: "m1k1o/neko/{{ neko_container_image_app }}:{{ neko_container_image_self_build_repo_version }}"
+neko_container_image_self_build_repo: "https://github.com/m1k1o/neko.git"
+neko_container_image_self_build_repo_version: "{{ 'v' + neko_version if neko_version != 'latest' else 'master' }}"
+neko_container_image_self_build_src_files_path: "{{ neko_base_path }}/docker-src"
+neko_container_image_self_build_repo_dockerfile_dir: "{{ neko_container_image_self_build_src_files_path }}/apps/{{ neko_container_image_app }}"
+neko_container_image_self_build_repo_dockerfile: "Dockerfile"
 
 # Controls whether the Neko container exposes its HTTP port (as defined by `neko_container_http_port`).
 #
