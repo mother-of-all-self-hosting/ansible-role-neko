@@ -80,7 +80,7 @@ neko_container_labels_traefik_tls: "{{ neko_container_labels_traefik_entrypoints
 neko_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
 # Controls which additional headers to attach to all HTTP requests.
-# To add your own custom request headers, use `neko_container_labels_traefik_additional_response_headers_custom`
+# To add your own custom request headers, use `neko_container_labels_traefik_additional_request_headers_custom`
 neko_container_labels_traefik_additional_request_headers: "{{ neko_container_labels_traefik_additional_request_headers_auto | combine(neko_container_labels_traefik_additional_request_headers_custom) }}"
 neko_container_labels_traefik_additional_request_headers_auto: {}
 neko_container_labels_traefik_additional_request_headers_custom: {}
