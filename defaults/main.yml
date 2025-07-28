@@ -24,6 +24,8 @@ neko_gid: ''
 # The hostname at which Neko is served.
 neko_hostname: ''
 
+neko_path_prefix: /
+
 # Warning: setting the Chromium-based browser available for Neko enables SYS_ADMIN capability
 # See: https://neko.m1k1o.net/docs/v3/installation/docker-images#chromium-based-browsers
 neko_container_image_app: "firefox"
@@ -72,10 +74,14 @@ neko_container_additional_volumes: []
 # See `../templates/labels.j2` for details.
 #
 # To inject your own other container labels, see `neko_container_labels_additional_labels`.
-neko_container_labels_traefik_enabled: false
-neko_container_labels_traefik_docker_network: ""
-neko_container_labels_traefik_entrypoints: web-secure
+neko_container_labels_traefik_enabled: true
+neko_container_labels_traefik_docker_network: "{{ neko_container_network }}"
+neko_container_labels_traefik_hostname: "{{ neko_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/neko`).
+neko_container_labels_traefik_path_prefix: "{{ neko_path_prefix }}"
+neko_container_labels_traefik_rule: "Host(`{{ neko_container_labels_traefik_hostname }}`){% if neko_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ neko_container_labels_traefik_path_prefix }}`){% endif %}"
 neko_container_labels_traefik_priority: 0
+neko_container_labels_traefik_entrypoints: web-secure
 neko_container_labels_traefik_tls: "{{ neko_container_labels_traefik_entrypoints != 'web' }}"
 neko_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
