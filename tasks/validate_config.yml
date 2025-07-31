@@ -29,6 +29,7 @@
     - neko_uid
     - neko_gid
     - neko_hostname
+    - neko_path_prefix
     - neko_container_network
 
 - name: Run if Traefik is enabled
@@ -42,6 +43,13 @@
       with_items:
         - neko_container_labels_traefik_hostname
         - neko_container_labels_traefik_path_prefix
+
+    - name: Fail if neko_container_labels_traefik_path_prefix is different than /
+      ansible.builtin.fail:
+        msg: >-
+          neko_container_labels_traefik_path_prefix (`{{ neko_container_labels_traefik_path_prefix }}`) must be `/`.
+          Neko does not support hosting under a subpath yet.
+      when: "neko_container_labels_traefik_path_prefix != '/'"
 
     # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
     # Knowing that `neko_container_labels_traefik_path_prefix` does not end with a slash
