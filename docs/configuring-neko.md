@@ -122,7 +122,7 @@ If you use the MASH playbook, the shortcut commands with the [`just` program](ht
 
 After running the command for installation, Neko becomes available at the specified hostname like `https://example.com`.
 
-To get started, go to the URL on a web browser and log in to the instance with the specified authentication method. By default you can log in as a regular user or administrator with passwords. **Note that the display name is not a username to be used with the password for logging in.**
+To get started, open the URL on a web browser and log in to the instance with the specified authentication method. By default you can log in as a regular user or administrator with passwords. **Note that the display name is not a username to be used with the password for logging in.**
 
 After logging in, you can start using the virtual browser by toggling the switch at the bottom of the UI to gain control of it. Without the control, it will not respond to an input with a mouse or keyboard.
 
