@@ -32,6 +32,12 @@
     - neko_path_prefix
     - neko_container_network
 
+- name: Fail if Neko member provider is invalid
+  ansible.builtin.fail:
+    msg: >-
+      neko_environment_variables_neko_member_provider must be 'multiuser', 'file', 'object', or 'noauth'
+  when: "neko_environment_variables_neko_member_provider not in ['multiuser', 'file', 'object', 'noauth']"
+
 - name: Run if Traefik is enabled
   when: neko_container_labels_traefik_enabled | bool
   block:
