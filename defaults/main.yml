@@ -16,7 +16,7 @@ neko_identifier: neko
 neko_base_path: "/{{ neko_identifier }}"
 
 # renovate: datasource=docker depName=ghcr.io/m1k1o/neko/firefox
-neko_version: 3.0.7
+neko_version: 3.0.8
 
 neko_uid: ''
 neko_gid: ''
