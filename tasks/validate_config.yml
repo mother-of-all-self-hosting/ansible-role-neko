@@ -19,6 +19,7 @@
     - { "old": "neko_epr", "new": "neko_environment_variables_neko_webrtc_epr" }
     - { "old": "neko_icelite", "new": "neko_environment_variables_neko_webrtc_icelite" }
     - { "old": "neko_ipfetch", "new": "neko_environment_variables_neko_webrtc_ip_retrieval_url" }
+    - { "old": "neko_http_header_content_permission_policy", "new": "neko_http_header_permissions_policy" }
 
 - name: Fail if required Neko settings not defined
   ansible.builtin.fail:
