@@ -18,11 +18,11 @@ neko_base_path: "/{{ neko_identifier }}"
 # renovate: datasource=docker depName=ghcr.io/m1k1o/neko/firefox
 neko_version: 3.0.8
 
-neko_uid: ''
-neko_gid: ''
+neko_uid: ""
+neko_gid: ""
 
 # The hostname at which Neko is served.
-neko_hostname: ''
+neko_hostname: ""
 
 neko_path_prefix: /
 
@@ -114,7 +114,7 @@ neko_container_labels_traefik_additional_response_headers_custom: {}
 # neko_container_labels_additional_labels: |
 #   my.label=1
 #   another.label="here"
-neko_container_labels_additional_labels: ''
+neko_container_labels_additional_labels: ""
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
@@ -193,27 +193,27 @@ neko_environment_variables_neko_desktop_upload_drop: false
 neko_environment_variables_neko_member_provider: multiuser
 
 # Specify password for admins.
-neko_environment_variables_neko_member_multiuser_user_password: ''
+neko_environment_variables_neko_member_multiuser_user_password: ""
 
 # Specify password for regular users.
-neko_environment_variables_neko_member_multiuser_admin_password: ''
+neko_environment_variables_neko_member_multiuser_admin_password: ""
 
 # Specify the absolute path to the file which contains users and their passwords.
-neko_environment_variables_neko_member_file_path: ''
+neko_environment_variables_neko_member_file_path: ""
 
 # Specify whether the passwords are hashed with SHA256 or not.
 neko_environment_variables_neko_member_file_hash: false
 
 # Specify list of users with their passwords and profiles in JSON encoded array.
-neko_environment_variables_neko_member_object_users: ''
+neko_environment_variables_neko_member_object_users: ""
 
 # Specify a file path to store a session.
 # See: https://neko.m1k1o.net/docs/v3/configuration/authentication#session
-neko_environment_variables_neko_session_file: ''
+neko_environment_variables_neko_session_file: ""
 
 neko_environment_variables_neko_webrtc_epr: '52000-52100'
 neko_environment_variables_neko_webrtc_icelite: '1'
-neko_environment_variables_neko_webrtc_ip_retrieval_url: ''
+neko_environment_variables_neko_webrtc_ip_retrieval_url: ""
 
 # Additional environment variables to pass to the Neko container.
 # You can use this to further influence the default configuration.
@@ -224,4 +224,4 @@ neko_environment_variables_neko_webrtc_ip_retrieval_url: ''
 #   NEKO_CHAT_ENABLED=false
 #   NEKO_FILETRANSFER_ENABLED=true
 #
-neko_environment_variables_additional_variables: ''
+neko_environment_variables_additional_variables: ""
