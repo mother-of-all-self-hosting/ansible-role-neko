@@ -109,12 +109,15 @@ neko_container_labels_traefik_additional_response_headers_custom: {}
 
 # neko_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
+# To add your own custom labels, use `neko_container_labels_additional_labels_custom`
 #
 # Example:
-# neko_container_labels_additional_labels: |
+# neko_container_labels_additional_labels_custom: |
 #   my.label=1
 #   another.label="here"
-neko_container_labels_additional_labels: ""
+neko_container_labels_additional_labels: "{{ neko_container_labels_additional_labels_auto | combine(neko_container_labels_additional_labels_custom) }}"
+neko_container_labels_additional_labels_auto: {}
+neko_container_labels_additional_labels_custom: {}
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
