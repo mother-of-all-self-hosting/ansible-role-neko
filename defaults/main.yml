@@ -175,6 +175,9 @@ neko_systemd_wanted_services_list_default: []
 neko_systemd_wanted_services_list_auto: []
 neko_systemd_wanted_services_list_custom: []
 
+# Specify the timezone
+neko_environment_variables_tz: UTC
+
 # Specify the screen resolution and refresh rate.
 # See: https://neko.m1k1o.net/docs/v3/configuration/desktop
 neko_environment_variables_neko_desktop_screen: '1920x1080@30'
