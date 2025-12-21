@@ -119,6 +119,11 @@ neko_container_labels_additional_labels: "{{ neko_container_labels_additional_la
 neko_container_labels_additional_labels_auto: {}
 neko_container_labels_additional_labels_custom: {}
 
+# A list of extra arguments to pass to the container (`docker create` command)
+neko_container_extra_arguments: "{{ neko_container_extra_arguments_auto + neko_container_extra_arguments_custom }}"
+neko_container_extra_arguments_auto: []
+neko_container_extra_arguments_custom: []
+
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
 #

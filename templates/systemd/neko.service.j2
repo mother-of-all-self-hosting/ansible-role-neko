@@ -45,6 +45,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
       {% endfor %}
       --tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+      {% for arg in neko_container_extra_arguments %}
+      {{ arg }} \
+      {% endfor %}
       {{ neko_container_image_self_build_name if neko_container_image_self_build else neko_container_image }}
 
 {% for network in neko_container_additional_networks %}
