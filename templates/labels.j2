@@ -56,4 +56,6 @@ traefik.http.routers.{{ neko_identifier }}.tls.certResolver={{ neko_container_la
 traefik.http.services.{{ neko_identifier }}.loadbalancer.server.port={{ neko_container_http_port }}
 {% endif %}
 
-{{ neko_container_labels_additional_labels }}
+{% for arg in neko_container_labels_additional_labels %}
+{{ arg }}
+{% endfor %}
