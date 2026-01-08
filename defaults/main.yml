@@ -112,7 +112,7 @@ neko_container_labels_traefik_additional_response_headers_custom: {}
 # To add your own custom labels, use `neko_container_labels_additional_labels_custom`
 #
 # Example:
-# neko_container_labels_additional_labels_custom: |
+# neko_container_labels_additional_labels_custom:
 #   - my.label=1
 #   - another.label="here"
 neko_container_labels_additional_labels: "{{ neko_container_labels_additional_labels_auto + neko_container_labels_additional_labels_custom }}"
