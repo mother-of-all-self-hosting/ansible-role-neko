@@ -51,7 +51,7 @@ neko_container_image_self_build_repo_dockerfile: "Dockerfile"
 neko_container_http_host_bind_port: ""
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
-neko_container_network: '{{ neko_identifier }}'
+neko_container_network: "{{ neko_identifier }}"
 
 # The port number in the container
 neko_container_http_port: 8080
