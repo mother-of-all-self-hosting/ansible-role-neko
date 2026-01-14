@@ -24,6 +24,8 @@ neko_gid: ""
 # The hostname at which Neko is served.
 neko_hostname: ""
 
+# The path at which Neko is served.
+# This value must either be `/` or not end with a slash (e.g. `/neko`).
 neko_path_prefix: /
 
 # Warning: setting the Chromium-based browser available for Neko enables SYS_ADMIN capability
@@ -45,9 +47,9 @@ neko_container_image_self_build_src_files_path: "{{ neko_base_path }}/docker-src
 neko_container_image_self_build_repo_dockerfile_dir: "{{ neko_container_image_self_build_src_files_path }}/apps/{{ neko_container_image_app }}"
 neko_container_image_self_build_repo_dockerfile: "Dockerfile"
 
-# Controls whether the Neko container exposes its HTTP port (as defined by `neko_container_http_port`).
+# Controls whether the container exposes its HTTP port (tcp/8080 in the container).
 #
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8731"), or empty string to not expose.
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
 neko_container_http_host_bind_port: ""
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
