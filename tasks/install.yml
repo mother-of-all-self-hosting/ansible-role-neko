@@ -25,6 +25,7 @@
   with_items:
     - env
     - labels
+  register: neko_support_files_result
 
 - name: Run if self-building of Neko container image is not enabled
   when: "not neko_container_image_self_build | bool"
@@ -36,20 +37,20 @@
         source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
         force_source: "{{ neko_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else neko_container_image_force_pull }}"
-      register: result
+      register: neko_container_image_pull_result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
-      until: result is not failed
+      until: neko_container_image_pull_result is not failed
 
     - name: Ensure Neko container image is pulled via ansible.builtin.command
       when: devture_systemd_docker_base_container_image_pull_method == 'command'
       ansible.builtin.command:
         cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ neko_container_image }}"
-      register: result
+      register: neko_container_image_pull_result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
-      until: result is not failed
-      changed_when: "'Downloaded newer image' in result.stdout"
+      until: neko_container_image_pull_result is not failed
+      changed_when: "'Downloaded newer image' in neko_container_image_pull_result.stdout"
 
 - name: Run if self-building of Neko container image is enabled
   when: "neko_container_image_self_build | bool"
@@ -73,6 +74,7 @@
           path: "{{ neko_container_image_self_build_repo_dockerfile_dir }}"
           pull: true
           args:
+      register: neko_container_image_build_result
 
 - name: Ensure Neko container network is created via community.docker.docker_network
   when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
@@ -100,3 +102,14 @@
     src: "{{ role_path }}/templates/systemd/neko.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ neko_identifier }}.service"
     mode: "0644"
+  register: neko_systemd_service_result
+
+- name: Determine whether Neko needs a restart
+  ansible.builtin.set_fact:
+    neko_restart_necessary: >-
+      {{
+        neko_support_files_result.changed | default(false)
+        or neko_systemd_service_result.changed | default(false)
+        or neko_container_image_pull_result.changed | default(false)
+        or neko_container_image_build_result.changed | default(false)
+      }}
