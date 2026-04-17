@@ -1,6 +1,7 @@
 {#
 SPDX-FileCopyrightText: 2023 Slavi Pantaleev
-SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2023, 2024 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -54,6 +55,52 @@ traefik.http.routers.{{ neko_identifier }}.tls.certResolver={{ neko_container_la
 {% endif %}
 
 traefik.http.services.{{ neko_identifier }}.loadbalancer.server.port={{ neko_container_http_port }}
+
+{% if neko_container_labels_traefik_metrics_enabled %}
+########################################################################
+#                                                                      #
+# Metrics                                                              #
+#                                                                      #
+########################################################################
+
+{% set middlewares = neko_container_labels_traefik_metrics_middlewares %}
+
+{% if neko_container_labels_traefik_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.{{ neko_identifier }}-metrics-basic-auth.basicauth.users={{ neko_container_labels_traefik_metrics_middleware_basic_auth_users }}
+{% set middlewares = middlewares + [neko_identifier + '-metrics-basic-auth'] %}
+{% endif %}
+
+traefik.http.middlewares.{{ neko_identifier }}-metrics-replace-path.replacepath.path=/metrics
+{% set middlewares = middlewares + [neko_identifier + '-metrics-replace-path'] %}
+
+traefik.http.routers.{{ neko_identifier }}-metrics.rule={{ neko_container_labels_traefik_metrics_rule }}
+
+{% if neko_container_labels_traefik_metrics_priority | int > 0 %}
+traefik.http.routers.{{ neko_identifier }}-metrics.priority={{ neko_container_labels_traefik_metrics_priority }}
+{% endif %}
+
+traefik.http.routers.{{ neko_identifier }}-metrics.service={{ neko_identifier }}-metrics
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ neko_identifier }}-metrics.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.{{ neko_identifier }}-metrics.entrypoints={{ neko_container_labels_traefik_metrics_entrypoints }}
+
+traefik.http.routers.{{ neko_identifier }}-metrics.tls={{ neko_container_labels_traefik_metrics_tls | to_json }}
+{% if neko_container_labels_traefik_metrics_tls %}
+traefik.http.routers.{{ neko_identifier }}-metrics.tls.certResolver={{ neko_container_labels_traefik_metrics_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ neko_identifier }}-metrics.loadbalancer.server.port={{ neko_container_http_port }}
+
+########################################################################
+#                                                                      #
+# /Metrics                                                             #
+#                                                                      #
+########################################################################
+{% endif %}
+
 {% endif %}
 
 {% for arg in neko_container_labels_additional_labels %}
