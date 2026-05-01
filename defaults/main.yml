@@ -91,6 +91,9 @@ neko_container_labels_traefik_priority: 0
 neko_container_labels_traefik_entrypoints: web-secure
 neko_container_labels_traefik_tls: "{{ neko_container_labels_traefik_entrypoints != 'web' }}"
 neko_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+neko_container_labels_traefik_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/basicauth/
+neko_container_labels_traefik_middleware_basic_auth_users: ""
 
 # Controls if labels are added to expose the Prometheus metrics publicly.
 neko_container_labels_traefik_metrics_enabled: false
