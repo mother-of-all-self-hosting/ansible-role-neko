@@ -37,7 +37,6 @@ neko_container_image_tag: "{{ neko_container_image_app }}:{{ neko_version }}"
 neko_container_image_registry_prefix: "{{ neko_container_image_registry_prefix_upstream }}"
 neko_container_image_registry_prefix_upstream: "{{ neko_container_image_registry_prefix_upstream_default }}"
 neko_container_image_registry_prefix_upstream_default: ghcr.io/
-neko_container_image_force_pull: "{{ neko_container_image.endswith(':latest') }}"
 
 neko_container_image_self_build: false
 neko_container_image_self_build_name: "m1k1o/neko/{{ neko_container_image_app }}:{{ neko_container_image_self_build_repo_version }}"

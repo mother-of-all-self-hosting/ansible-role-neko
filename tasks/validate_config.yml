@@ -21,6 +21,7 @@
     - { "old": "neko_icelite", "new": "neko_environment_variables_neko_webrtc_icelite" }
     - { "old": "neko_ipfetch", "new": "neko_environment_variables_neko_webrtc_ip_retrieval_url" }
     - { "old": "neko_http_header_content_permission_policy", "new": "neko_http_header_permissions_policy" }
+    - { "old": "neko_container_image_force_pull", "new": "<removed> (the new community.docker.docker_image_pull module handles this natively)" }
 
 - name: Fail if required Neko settings not defined
   ansible.builtin.fail:
