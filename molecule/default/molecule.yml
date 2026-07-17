@@ -27,6 +27,10 @@ provisioner:
   inventory:
     group_vars:
       all:
+        # Helper variables
+        neko_debug_service_enabled: false
+
+        # Variables for Neko
         neko_uid: 1000
         neko_gid: 1000
         neko_hostname: neko
