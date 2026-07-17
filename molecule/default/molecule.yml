@@ -33,7 +33,7 @@ provisioner:
         # Variables for Neko
         neko_uid: 1000
         neko_gid: 1000
-        neko_hostname: neko
+        neko_hostname: localhost
         neko_container_labels_traefik_enabled: false
         neko_container_http_host_bind_port: 8080
   env:
