@@ -1,5 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": [
+    "Neko bumps stay human-reviewed pull requests, patch ones included: Neko ships features and changed defaults under patch versions, in the parts a CI run structurally cannot reach (v3.1.5 alone disabled CORS by default, changed XInput keyboard dispatch and added H265), and the annotation follows only the firefox image while the other application flavours skip patches - chromium never published 3.0.7, kde never published 3.0.9 - so an automerged bump could leave those deployments with no image to pull.",
+    "What a bump is gated on is the Molecule suite, which runs the bumped image and asserts that its org.opencontainers.image.version is the pinned one, that the role's passwords and screen configuration reached the process, and that Neko's own built-in passwords do not work.",
+    "versioning=semver on the annotation in defaults/main.yml is what keeps the version list honest: of the 58 non-digest tags ghcr.io/m1k1o/neko/firefox publishes, strict semver leaves only the real X.Y.Z releases, because the floating 2, 3, 3.0, 3.1 and latest tags are not versions at all and the 3.0.0-beta.* tags parse as prereleases."
+  ],
   "extends": [
     "github>mother-of-all-self-hosting/renovate-config#v1.0.0"
   ]
