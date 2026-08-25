@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 - 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
@@ -66,6 +66,12 @@
         name: "{{ neko_container_image_self_build_name }}"
         dockerfile: "{{ neko_container_image_self_build_repo_dockerfile }}"
         path: "{{ neko_container_image_self_build_repo_dockerfile_dir }}"
+        # The application Dockerfiles only add the browser on top; the Neko server itself comes
+        # from the base image, whose Dockerfile default is the floating `:latest` tag. Passing the
+        # pinned version keeps a self-built image on `neko_version` rather than on whatever Neko
+        # released most recently.
+        args:
+          BASE_IMAGE: "{{ neko_container_image_self_build_base_image }}"
         pull: true
         rebuild: "{{ 'always' if neko_git_pull_results.changed | bool else 'never' }}"
       register: neko_container_image_build_result

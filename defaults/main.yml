@@ -46,6 +46,13 @@ neko_container_image_self_build_src_files_path: "{{ neko_base_path }}/docker-src
 neko_container_image_self_build_repo_dockerfile_dir: "{{ neko_container_image_self_build_src_files_path }}/apps/{{ neko_container_image_app }}"
 neko_container_image_self_build_repo_dockerfile: "Dockerfile"
 
+# The image that the application's Dockerfile builds on top of. It carries the Neko server itself,
+# so it is what actually determines the Neko version of a self-built image.
+#
+# Upstream's Dockerfiles default this to `ghcr.io/m1k1o/neko/base:latest`, which would quietly give
+# you the newest Neko release instead of the pinned `neko_version`, so the role passes it explicitly.
+neko_container_image_self_build_base_image: "{{ neko_container_image_registry_prefix }}m1k1o/neko/base:{{ neko_version }}"
+
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 neko_container_network: "{{ neko_identifier }}"
 

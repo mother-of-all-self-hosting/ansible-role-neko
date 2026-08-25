@@ -108,6 +108,16 @@ See [this page](https://neko.m1k1o.net/docs/v3/installation/docker-images#apps) 
 >
 > Setting a Chromium-based browser modifies shared memory size to 2 GB and enables `--cap-add=SYS_ADMIN`. See [this page](https://www.redhat.com/en/blog/container-tidbits-adding-capabilities-container) for the security implication of enabling it.
 
+### Build the container image locally (optional)
+
+Instead of pulling a published image, the role can build one on the server from Neko's own sources:
+
+```yaml
+neko_container_image_self_build: true
+```
+
+The Dockerfile of an application (Firefox, Chromium, KDE, …) only installs that application; the Neko server itself comes from Neko's base image. The role passes the pinned `neko_version` to the build as the `BASE_IMAGE` build argument, so that a self-built image runs the version you pinned rather than whatever Neko released most recently. Should you need a different base, set `neko_container_image_self_build_base_image`.
+
 ### Integrating with Prometheus (optional)
 
 Neko can natively expose metrics to Prometheus.
