@@ -1,3 +1,4 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 spatterlight
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
 #
@@ -19,6 +20,8 @@
       ansible.builtin.package:
         name:
           - python3-requests
+          # Lets the inner Docker daemon use fuse-overlayfs (see below).
+          - fuse-overlayfs
         state: present
 
     - name: Ensure Docker is installed for Neko Molecule tests preparation
@@ -26,4 +29,9 @@
         name: ansible-role-docker
       vars:
         docker_daemon_options:
-          storage-driver: vfs
+          # Neko's images are large - the published firefox image alone is over half a
+          # gigabyte spread across 25 layers, and the self-build scenario stacks another
+          # image on top of it. `vfs` makes a full copy of the filesystem for every one of
+          # those layers, which multiplies that into tens of gigabytes; `overlay2` cannot
+          # be nested inside this container. fuse-overlayfs can, and stores each layer once.
+          storage-driver: fuse-overlayfs
