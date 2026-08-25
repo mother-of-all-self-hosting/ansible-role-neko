@@ -84,6 +84,10 @@ neko_environment_variables_neko_member_multiuser_user_password: USER_PASSWORD_HE
 
 You can change the authentication method by setting `neko_environment_variables_neko_member_provider`. See [this section](https://neko.m1k1o.net/docs/v3/configuration/authentication#member) on the official documentation for the available methods.
 
+### Set a different port for the HTTP server (optional)
+
+The service listens on port `8080` inside its container. If that clashes with something else in your setup, you can change it with the `neko_container_http_port` variable; the role passes it on to Neko, publishes it and points the Traefik labels at it.
+
 ### Select an application (optional)
 
 There are multiple applications available to use on the Neko's instance. For example, by adding the following configuration to your `vars.yml` file you can set up KDE desktop environment in a container where you can run multiple applications:
