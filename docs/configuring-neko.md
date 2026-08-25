@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2020 Chris van Dijk
 SPDX-FileCopyrightText: 2020 Dominik Zajac
 SPDX-FileCopyrightText: 2020 Mickaël Cornière
 SPDX-FileCopyrightText: 2020-2024 MDAD project contributors
-SPDX-FileCopyrightText: 2020-2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020-2024, 2026 Slavi Pantaleev
 SPDX-FileCopyrightText: 2022 François Darveau
 SPDX-FileCopyrightText: 2022 Julian Foad
 SPDX-FileCopyrightText: 2022 Warren Bailey
@@ -30,7 +30,7 @@ See the project's [documentation](https://neko.m1k1o.net/docs/v3/introduction) t
 
 ## Prerequisites
 
-To use the service, by default you need to open ports `56000-56100/udp` of the host. See [this section](https://neko.m1k1o.net/docs/v3/configuration/webrtc#epr) on the official documentation for details.
+To use the service, by default you need to open ports `52000-52100/udp` of the host. That is the range which the role publishes for WebRTC, as set by the `neko_environment_variables_neko_webrtc_epr` variable. See [this section](https://neko.m1k1o.net/docs/v3/configuration/webrtc#epr) on the official documentation for details.
 
 ## Adjusting the playbook configuration
 
