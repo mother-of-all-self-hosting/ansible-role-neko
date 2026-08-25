@@ -1,14 +1,28 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 spatterlight
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Verify Neko systemd service
+- name: Verify self-built Neko
   hosts: all
   become: true
   gather_facts: false
+
+  vars:
+    neko_expected_http_port: 8099
+    neko_expected_admin_password: molecule-admin-9c71
+    neko_base_url: "http://localhost:8099"
+
   tasks:
+    - name: Read the role's own defaults
+      # Only for values which describe the role itself rather than this scenario. Loaded
+      # under a name of its own so that it cannot outrank the scenario's group_vars.
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: neko_role_defaults
+
     - name: Wait for Neko service to become active (up to 180s)
       ansible.builtin.systemd:
         name: neko.service
@@ -17,6 +31,8 @@
       retries: 36
       delay: 5
 
+    # `Restart=always` keeps a crash-looping unit reporting `active`, so this is a
+    # precondition for the checks below rather than a result in itself.
     - name: Assert Neko service is active
       ansible.builtin.assert:
         that: neko_service.status.ActiveState == 'active'
@@ -29,25 +45,147 @@
         cmd: journalctl -xeu neko.service
       changed_when: false
 
-    - name: Wait for Neko HTTP endpoint to respond (up to 10m)
+    - name: Wait for Neko to answer its health endpoint (up to 10m)
       ansible.builtin.uri:
-        url: "http://localhost:8080/"
+        url: "{{ neko_base_url }}/health"
         method: GET
-        status_code: [200, 302]
+        status_code: [200]
         follow_redirects: none
-      register: neko_endpoint
-      until: neko_endpoint.status in [200, 302]
+        return_content: true
+      register: neko_health
+      until: neko_health.status == 200
       retries: 120
       delay: 5
 
-    - name: Assert Neko HTTP endpoint responds
+    - name: Assert the self-built Neko reports itself healthy on the configured port
       ansible.builtin.assert:
-        that: neko_endpoint.status in [200, 302]
-        fail_msg: "Neko did not respond as expected ({{ neko_endpoint.status | default('no response') }})"
-        success_msg: "Neko responded with {{ neko_endpoint.status }}"
+        that: neko_health.content | trim == 'true'
+        fail_msg: "GET /health on port {{ neko_expected_http_port }} returned {{ neko_health.content | default('nothing') }}"
+        success_msg: "The self-built Neko is healthy on port {{ neko_expected_http_port }}"
 
-    - name: Show Neko systemd service status summary
+    ############################################################################
+    # What is running was built here, and was built from the pinned version
+    ############################################################################
+
+    - name: Inspect the Neko container
+      ansible.builtin.command:
+        cmd: docker container inspect neko
+      register: neko_container_inspect_result
+      changed_when: false
+
+    - name: Parse the Neko container inspection
+      ansible.builtin.set_fact:
+        neko_container_info: "{{ (neko_container_inspect_result.stdout | from_json)[0] }}"
+        # `neko_container_image_self_build_name` is derived from `neko_version` through
+        # Jinja, so it cannot be read out of the role's defaults directly. Rebuild it here
+        # from the leaf that Renovate edits.
+        neko_expected_self_built_image: "m1k1o/neko/firefox:v{{ neko_role_defaults.neko_version }}"
+
+    - name: Assert the container runs the locally built image
+      ansible.builtin.assert:
+        that: neko_container_info.Config.Image == neko_expected_self_built_image
+        fail_msg: >-
+          The container runs {{ neko_container_info.Config.Image }},
+          not the self-built {{ neko_expected_self_built_image }}
+        success_msg: "The container runs the self-built {{ neko_expected_self_built_image }}"
+
+    - name: Inspect the self-built Neko container image
+      ansible.builtin.command:
+        cmd: "docker image inspect {{ neko_expected_self_built_image }}"
+      register: neko_image_inspect_result
+      changed_when: false
+
+    - name: Parse the self-built image inspection
+      ansible.builtin.set_fact:
+        neko_image_info: "{{ (neko_image_inspect_result.stdout | from_json)[0] }}"
+
+    # An image that was pulled carries the digest it was pulled by. One that was built
+    # here does not, which is what separates this scenario from the `default` one rather
+    # than merely trusting the name it was tagged with.
+    - name: Assert the image was built here rather than pulled
+      ansible.builtin.assert:
+        that: neko_image_info.RepoDigests | length == 0
+        fail_msg: "The image carries repository digests ({{ neko_image_info.RepoDigests }}), so it was pulled, not built"
+        success_msg: "The image carries no repository digest, so it was built on this host"
+
+    # Neko's application Dockerfiles only install the browser; the server, and with it the
+    # version, comes from `ARG BASE_IMAGE`, whose upstream default is the floating
+    # `base:latest`. The role passes the pinned version instead, and the label inherited
+    # from that base is what proves it. Drop the build argument and this assert starts
+    # failing as soon as Neko publishes a release newer than the pinned one.
+    - name: Assert the self-built image carries the pinned Neko version
+      ansible.builtin.assert:
+        that: neko_image_info.Config.Labels['org.opencontainers.image.version'] == neko_role_defaults.neko_version | string
+        fail_msg: >-
+          The self-built image is labelled
+          {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }},
+          while the role pins {{ neko_role_defaults.neko_version }}
+        success_msg: "The self-built image is Neko {{ neko_role_defaults.neko_version }}"
+
+    ############################################################################
+    # The self-built image is a working Neko, configured by the role
+    ############################################################################
+
+    - name: Attempt to log in to the self-built Neko with a wrong password
+      ansible.builtin.uri:
+        url: "{{ neko_base_url }}/api/login"
+        method: POST
+        body_format: json
+        body:
+          username: molecule
+          password: definitely-not-the-password
+        status_code: [401]
+        follow_redirects: none
+      register: neko_login_wrong
+
+    - name: Assert the self-built Neko rejects a wrong password
+      ansible.builtin.assert:
+        that: neko_login_wrong.status == 401
+        fail_msg: "Neko answered {{ neko_login_wrong.status }} to a wrong password instead of 401"
+        success_msg: "The self-built Neko rejects a wrong password"
+
+    - name: Log in to the self-built Neko as an administrator
+      ansible.builtin.uri:
+        url: "{{ neko_base_url }}/api/login"
+        method: POST
+        body_format: json
+        body:
+          username: molecule-admin
+          password: "{{ neko_expected_admin_password }}"
+        status_code: [200]
+        follow_redirects: none
+      register: neko_login_admin
+
+    - name: Assert the administrator password from the role logs in with admin rights
+      ansible.builtin.assert:
+        that:
+          - neko_login_admin.json.profile.is_admin
+          - neko_login_admin.json.token | length > 0
+        fail_msg: "Logging in with the configured administrator password did not produce an admin session"
+        success_msg: "The configured administrator password produces an admin session"
+
+    # The mirror of the `default` scenario, which leaves the metrics off and asserts a 404.
+    # Here `neko_container_labels_traefik_metrics_enabled` is on, the role renders
+    # NEKO_SERVER_METRICS=true, and the route has to be there.
+    - name: Read the Prometheus metrics endpoint, which this scenario enables
+      ansible.builtin.uri:
+        url: "{{ neko_base_url }}/metrics"
+        method: GET
+        status_code: [200]
+        follow_redirects: none
+        return_content: true
+      register: neko_metrics
+
+    - name: Assert the Prometheus metrics endpoint serves metrics
+      ansible.builtin.assert:
+        that: "'go_gc_duration_seconds' in neko_metrics.content"
+        fail_msg: "/metrics answered {{ neko_metrics.status }} but did not look like Prometheus output"
+        success_msg: "/metrics serves Prometheus metrics, as the role configured"
+
+    - name: Show self-built Neko verification summary
       ansible.builtin.debug:
         msg:
           - "Neko systemd: {{ neko_service.status.ActiveState }}"
-          - "Neko HTTP: {{ neko_endpoint.status }}"
+          - "Neko image: {{ neko_container_info.Config.Image }}"
+          - "Neko version label: {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }}"
+          - "Neko admin session: {{ neko_login_admin.json.id }}"

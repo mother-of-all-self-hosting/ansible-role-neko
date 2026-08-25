@@ -1,3 +1,4 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 spatterlight
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
 #
@@ -36,7 +37,26 @@ provisioner:
         neko_gid: 1000
         neko_hostname: localhost
         neko_container_labels_traefik_enabled: false
-        neko_container_http_host_bind_port: 8080
+
+        # Deliberately not Neko's own default of 8080. The container images bake
+        # `NEKO_SERVER_BIND=:8080` in, so probing a different port is what proves that
+        # the role's env file - and not the image - decides where Neko listens.
+        neko_container_http_port: 8099
+        neko_container_http_host_bind_port: 8099
+
+        # Deliberately not the role's own default of 1920x1080@30, so that reading the
+        # screen configuration back over Neko's API distinguishes a value this scenario
+        # chose from one that merely happened to be there.
+        neko_environment_variables_neko_desktop_screen: 1280x720@25
+
+        # Neko falls back to its own built-in passwords (`neko` and `admin`) for any of
+        # these which is left empty, which verify.yml checks has not happened.
+        neko_environment_variables_neko_member_multiuser_user_password: molecule-user-4f2a
+        neko_environment_variables_neko_member_multiuser_admin_password: molecule-admin-9c71
+
+        # Left off on purpose: Neko enables /metrics by default, so a 404 there is a
+        # negative control which an instance running on image defaults could not pass.
+        neko_container_labels_traefik_metrics_enabled: false
   env:
     # Workaround for https://github.com/ansible/molecule/issues/4391
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles

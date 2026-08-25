@@ -1,3 +1,4 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2026 spatterlight
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
 #
@@ -36,10 +37,22 @@ provisioner:
         neko_gid: 1000
         neko_hostname: localhost
         neko_container_labels_traefik_enabled: false
-        neko_container_http_host_bind_port: 8080
 
         # Test self-building
         neko_container_image_self_build: true
+
+        # See the note in the `default` scenario: this is not Neko's built-in bind port.
+        neko_container_http_port: 8099
+        neko_container_http_host_bind_port: 8099
+
+        neko_environment_variables_neko_member_multiuser_user_password: molecule-user-4f2a
+        neko_environment_variables_neko_member_multiuser_admin_password: molecule-admin-9c71
+
+        # The mirror image of the `default` scenario, which leaves this off and asserts
+        # that /metrics is gone. Turning it on here asserts the other direction, so that
+        # the pair proves the role's value reaches Neko rather than one of them agreeing
+        # with a Neko default by accident.
+        neko_container_labels_traefik_metrics_enabled: true
   env:
     # Workaround for https://github.com/ansible/molecule/issues/4391
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles

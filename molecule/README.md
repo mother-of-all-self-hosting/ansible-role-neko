@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2018-2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018-2026 Slavi Pantaleev
 SPDX-FileCopyrightText: 2019-2022 Aaron Raimist
 SPDX-FileCopyrightText: 2019-2023 MDAD project contributors
 SPDX-FileCopyrightText: 2023 QEDeD
@@ -47,11 +47,17 @@ Currently these testing scenarios are available:
 
 ### `default`
 
-Tests a standard Neko installation.
+Tests a standard Neko installation against a published container image.
+
+It logs in over Neko's HTTP API with the passwords the role configured, checks that a wrong password and Neko's own built-in default passwords (`neko` and `admin`) are refused, reads the screen configuration back to confirm that the value the scenario chose reached the running X server, and asserts that the running image carries the `neko_version` the role pins. Neko is deliberately put on a port other than the one baked into the image, and its Prometheus endpoint — which Neko serves by default — is deliberately turned off, so that neither can pass against an instance the role never configured.
+
+WebRTC media is out of reach of a CI run, so nothing here claims to test it.
 
 ### `default-selfbuild`
 
 Tests a standard Neko installation with self-building the container image.
+
+Besides checking that the resulting image is a working, role-configured Neko, it asserts that the image was built on the host rather than pulled, and that it carries the pinned `neko_version`. The latter is what guards the `BASE_IMAGE` build argument: Neko's application Dockerfiles take the server itself from a base image whose Dockerfile default is the floating `:latest` tag. It also enables the Prometheus endpoint that the `default` scenario disables, so that the pair proves the setting in both directions.
 
 ## Running
 
