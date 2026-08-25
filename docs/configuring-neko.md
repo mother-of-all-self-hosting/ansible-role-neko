@@ -80,6 +80,10 @@ neko_environment_variables_neko_member_multiuser_admin_password: ADMIN_PASSWORD_
 neko_environment_variables_neko_member_multiuser_user_password: USER_PASSWORD_HERE
 ```
 
+> [!WARNING]
+>
+> Both passwords are required, and the role refuses to install without them. Leaving one empty does **not** turn authentication off. Neko reads its configuration with [viper](https://github.com/spf13/viper), which ignores an environment variable that is set to an empty value, so an empty password makes Neko fall back to its own built-in defaults — `neko` for regular users and `admin` for administrators. Anyone who could reach the instance would then be able to take control of the browser running on your server.
+
 #### Use another authentication method (optional)
 
 You can change the authentication method by setting `neko_environment_variables_neko_member_provider`. See [this section](https://neko.m1k1o.net/docs/v3/configuration/authentication#member) on the official documentation for the available methods.

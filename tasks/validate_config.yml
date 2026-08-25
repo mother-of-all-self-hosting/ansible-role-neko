@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 MASH project contributors
 # SPDX-FileCopyrightText: 2023, 2024 Julian-Samuel Gebühr
-# SPDX-FileCopyrightText: 2023-2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023-2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -40,6 +40,41 @@
     msg: >-
       neko_environment_variables_neko_member_provider must be 'multiuser', 'file', 'object', or 'noauth'
   when: "neko_environment_variables_neko_member_provider not in ['multiuser', 'file', 'object', 'noauth']"
+
+# Neko reads its configuration with viper, which treats an environment variable that is set to an
+# empty value as if it were not set at all. An empty password here therefore does not disable
+# authentication - it hands the instance Neko's own built-in defaults (`neko` for regular users,
+# `admin` for administrators), on a hostname that is usually reachable from the internet.
+- name: Fail if Neko multiuser passwords are not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+      Neko's `multiuser` member provider (`neko_environment_variables_neko_member_provider`) authenticates
+      with passwords, and leaving one empty does not turn authentication off: Neko ignores environment
+      variables which are set to an empty value and falls back to its own well-known default passwords
+      (`neko` for regular users, `admin` for administrators), letting anyone who can reach the instance
+      take control of the browser running on your server.
+      Set a password of your own, or switch to another member provider.
+  when: "neko_environment_variables_neko_member_provider == 'multiuser' and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - neko_environment_variables_neko_member_multiuser_user_password
+    - neko_environment_variables_neko_member_multiuser_admin_password
+
+- name: Fail if Neko member file provider settings are not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for the `file` member provider.
+  when: "neko_environment_variables_neko_member_provider == 'file' and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - neko_environment_variables_neko_member_file_path
+
+- name: Fail if Neko member object provider settings are not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for the `object` member provider.
+  when: "neko_environment_variables_neko_member_provider == 'object' and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - neko_environment_variables_neko_member_object_users
 
 - name: Run if Traefik is enabled
   when: neko_container_labels_traefik_enabled | bool

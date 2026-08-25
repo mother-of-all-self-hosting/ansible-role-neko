@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023, 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2023, 2024 Nikita Chernyi
 # SPDX-FileCopyrightText: 2023, 2025 MASH project contributors
-# SPDX-FileCopyrightText: 2023-2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023-2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
 # SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
@@ -259,10 +259,20 @@ neko_environment_variables_neko_desktop_upload_drop: false
 # See: https://neko.m1k1o.net/docs/v3/configuration/authentication#member
 neko_environment_variables_neko_member_provider: multiuser
 
-# Specify password for admins.
+# Specify password for regular users.
+#
+# Leaving this empty does NOT disable password authentication. Neko reads its configuration
+# with viper, which ignores environment variables that are set to an empty value, so an empty
+# value here makes Neko fall back to its own built-in default password (`neko`).
+# The role therefore refuses to install with the `multiuser` member provider and an empty password.
 neko_environment_variables_neko_member_multiuser_user_password: ""
 
-# Specify password for regular users.
+# Specify password for admins.
+#
+# Leaving this empty does NOT disable password authentication. See the note on
+# `neko_environment_variables_neko_member_multiuser_user_password` above; Neko's own built-in
+# default admin password is `admin`.
+# The role therefore refuses to install with the `multiuser` member provider and an empty password.
 neko_environment_variables_neko_member_multiuser_admin_password: ""
 
 # Specify the absolute path to the file which contains users and their passwords.
