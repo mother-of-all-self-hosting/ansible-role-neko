@@ -6,6 +6,6 @@
     "versioning=semver on the annotation in defaults/main.yml is what keeps the version list honest: of the 58 non-digest tags ghcr.io/m1k1o/neko/firefox publishes, strict semver leaves only the real X.Y.Z releases, because the floating 2, 3, 3.0, 3.1 and latest tags are not versions at all and the 3.0.0-beta.* tags parse as prereleases."
   ],
   "extends": [
-    "github>mother-of-all-self-hosting/renovate-config#v1.0.0"
+    "github>mother-of-all-self-hosting/renovate-config#v1.1.0"
   ]
 }
