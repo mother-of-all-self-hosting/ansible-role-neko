@@ -112,19 +112,11 @@
       register: neko_image_inspect_result
       changed_when: false
 
-    # `neko --version` inside the published images reports `dev@dev`, because upstream's
-    # release build does not inject the version into the binary. The OCI label is the
-    # only honest version surface these images have.
-    - name: Assert the running image is labelled with the pinned Neko version
+    - name: Assert the running Neko is the version this role installs
       ansible.builtin.assert:
-        that: >-
-          (neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version']
-          == neko_role_defaults.neko_version | string
-        fail_msg: >-
-          The image is labelled
-          {{ (neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] }},
-          while the role pins {{ neko_role_defaults.neko_version }}
-        success_msg: "The running image is Neko {{ neko_role_defaults.neko_version }}"
+        that: "(neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string"
+        fail_msg: "Neko reports {{ (neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
+        success_msg: "Neko reports {{ (neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] }}"
 
     ############################################################################
     # Authentication: the role's passwords, and not Neko's built-in ones

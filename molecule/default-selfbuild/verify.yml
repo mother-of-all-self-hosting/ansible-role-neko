@@ -114,14 +114,11 @@
     # `base:latest`. The role passes the pinned version instead, and the label inherited
     # from that base is what proves it. Drop the build argument and this assert starts
     # failing as soon as Neko publishes a release newer than the pinned one.
-    - name: Assert the self-built image carries the pinned Neko version
+    - name: Assert the running Neko is the version this role installs
       ansible.builtin.assert:
-        that: neko_image_info.Config.Labels['org.opencontainers.image.version'] == neko_role_defaults.neko_version | string
-        fail_msg: >-
-          The self-built image is labelled
-          {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }},
-          while the role pins {{ neko_role_defaults.neko_version }}
-        success_msg: "The self-built image is Neko {{ neko_role_defaults.neko_version }}"
+        that: neko_image_info.Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string
+        fail_msg: "Neko reports {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
+        success_msg: "Neko reports {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }}"
 
     ############################################################################
     # The self-built image is a working Neko, configured by the role
