@@ -22,12 +22,13 @@
     neko_base_url: "http://localhost:8099"
 
   tasks:
-    - name: Read the role's own defaults
-      # Only for values which describe the role itself rather than this scenario. Loaded
-      # under a name of its own so that it cannot outrank the scenario's group_vars.
+    # The role is not included in this playbook, so its defaults are not in
+    # scope. Reading defaults/main.yml directly ties the version assertion
+    # below.
+    - name: Load the role defaults
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
-        name: neko_role_defaults
+        name: neko_defaults
 
     - name: Wait for Neko service to become active (up to 180s)
       ansible.builtin.systemd:
@@ -74,7 +75,7 @@
     - name: Assert Neko reports itself healthy on the configured port
       ansible.builtin.assert:
         that: neko_health.content | trim == 'true'
-        fail_msg: "GET /health on port {{ neko_expected_http_port }} returned {{ neko_health.content | default('nothing') }}"
+        fail_msg: "GET /health on port {{ neko_expected_http_port }} returned {{ neko_health.content | default('none') }}"
         success_msg: "Neko is healthy on port {{ neko_expected_http_port }}"
 
     - name: Inspect the Neko container
@@ -99,10 +100,10 @@
 
     - name: Assert the container runs the image the role pins
       ansible.builtin.assert:
-        that: neko_container_info.Config.Image == ('ghcr.io/m1k1o/neko/firefox:' ~ neko_role_defaults.neko_version)
+        that: neko_container_info.Config.Image == ('ghcr.io/m1k1o/neko/firefox:' ~ neko_defaults.neko_version)
         fail_msg: >-
           The container runs {{ neko_container_info.Config.Image }},
-          not ghcr.io/m1k1o/neko/firefox:{{ neko_role_defaults.neko_version }}
+          not ghcr.io/m1k1o/neko/firefox:{{ neko_defaults.neko_version }}
         success_msg: "The container runs {{ neko_container_info.Config.Image }}"
 
     - name: Inspect the Neko container image

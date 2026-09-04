@@ -16,12 +16,13 @@
     neko_base_url: "http://localhost:8099"
 
   tasks:
-    - name: Read the role's own defaults
-      # Only for values which describe the role itself rather than this scenario. Loaded
-      # under a name of its own so that it cannot outrank the scenario's group_vars.
+    # The role is not included in this playbook, so its defaults are not in
+    # scope. Reading defaults/main.yml directly ties the version assertion
+    # below.
+    - name: Load the role defaults
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
-        name: neko_role_defaults
+        name: neko_defaults
 
     - name: Wait for Neko service to become active (up to 180s)
       ansible.builtin.systemd:
@@ -60,7 +61,7 @@
     - name: Assert the self-built Neko reports itself healthy on the configured port
       ansible.builtin.assert:
         that: neko_health.content | trim == 'true'
-        fail_msg: "GET /health on port {{ neko_expected_http_port }} returned {{ neko_health.content | default('nothing') }}"
+        fail_msg: "GET /health on port {{ neko_expected_http_port }} returned {{ neko_health.content | default('none') }}"
         success_msg: "The self-built Neko is healthy on port {{ neko_expected_http_port }}"
 
     ############################################################################
@@ -79,7 +80,7 @@
         # `neko_container_image_self_build_name` is derived from `neko_version` through
         # Jinja, so it cannot be read out of the role's defaults directly. Rebuild it here
         # from the leaf that Renovate edits.
-        neko_expected_self_built_image: "m1k1o/neko/firefox:v{{ neko_role_defaults.neko_version }}"
+        neko_expected_self_built_image: "m1k1o/neko/firefox:v{{ neko_defaults.neko_version }}"
 
     - name: Assert the container runs the locally built image
       ansible.builtin.assert:
