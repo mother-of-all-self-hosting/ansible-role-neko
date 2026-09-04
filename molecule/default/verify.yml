@@ -263,7 +263,7 @@
         fail_msg: "/metrics answered {{ neko_metrics.status }}; NEKO_SERVER_METRICS=false did not reach Neko"
         success_msg: "/metrics is disabled, as the role configured"
 
-    - name: Show Neko verification summary
+    - name: Show the Neko verification summary
       ansible.builtin.debug:
         msg:
           - "Neko systemd: {{ neko_service.status.ActiveState }}"

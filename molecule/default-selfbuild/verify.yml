@@ -183,7 +183,7 @@
         fail_msg: "/metrics answered {{ neko_metrics.status }} but did not look like Prometheus output"
         success_msg: "/metrics serves Prometheus metrics, as the role configured"
 
-    - name: Show self-built Neko verification summary
+    - name: Show the self-built Neko verification summary
       ansible.builtin.debug:
         msg:
           - "Neko systemd: {{ neko_service.status.ActiveState }}"
