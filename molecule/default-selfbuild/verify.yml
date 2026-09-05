@@ -16,67 +16,9 @@
     neko_base_url: "http://localhost:8099"
 
   tasks:
-    # The role is not included in this playbook, so its defaults are not in
-    # scope. Reading defaults/main.yml directly ties the version assertion
-    # below.
-    - name: Load the role defaults
-      ansible.builtin.include_vars:
-        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
-        name: neko_defaults
-
-    - name: Wait for Neko service to become active (up to 180s)
-      ansible.builtin.systemd:
-        name: neko.service
-      register: neko_service
-      until: neko_service.status.ActiveState == 'active'
-      retries: 36
-      delay: 5
-
-    # `Restart=always` keeps a crash-looping unit reporting `active`, so this is a
-    # precondition for the checks below rather than a result in itself.
-    - name: Assert Neko service is active
-      ansible.builtin.assert:
-        that: neko_service.status.ActiveState == 'active'
-        fail_msg: "neko.service not active ({{ neko_service.status.ActiveState }})"
-        success_msg: "neko.service is active"
-
-    - name: Retrieve Neko service log for debugging
-      when: neko_debug_service_enabled | bool
-      ansible.builtin.command:
-        cmd: journalctl -xeu neko.service
-      changed_when: false
-
-    ############################################################################
-    # The port the role was told to use, not the one baked into the image
-    ############################################################################
-
-    - name: Wait for Neko to answer its health endpoint (up to 10m)
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/health"
-        method: GET
-        status_code: [200]
-        follow_redirects: none
-        return_content: true
-      register: neko_health
-      until: neko_health.status == 200
-      retries: 120
-      delay: 5
-
-    # The images ship `NEKO_SERVER_BIND=:8080`. Everything in this play talks to 8099,
-    # which only answers because the role's env file overrode that; without the override
-    # Neko would listen on 8080 inside the container and nothing would be behind the
-    # published 8099.
-    - name: Assert Neko reports itself healthy on the configured port
-      ansible.builtin.assert:
-        that: neko_health.content | trim == 'true'
-        fail_msg: "GET /health on port {{ neko_expected_http_port }} returned {{ neko_health.content | default('none') }}"
-        success_msg: "Neko is healthy on port {{ neko_expected_http_port }}"
-
-    - name: Inspect the Neko container
-      ansible.builtin.command:
-        cmd: docker container inspect neko
-      register: neko_container_inspect_result
-      changed_when: false
+    - name: Run the checks shared by all Neko scenarios
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
 
     - name: Parse the Neko container inspection
       ansible.builtin.set_fact:
@@ -128,43 +70,9 @@
     # The self-built image is a working Neko, configured by the role
     ############################################################################
 
-    - name: Attempt to log in to Neko with a wrong password
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/api/login"
-        method: POST
-        body_format: json
-        body:
-          username: molecule
-          password: definitely-not-the-password
-        status_code: [401]
-        follow_redirects: none
-      register: neko_login_wrong
-
-    - name: Assert Neko rejects a wrong password
-      ansible.builtin.assert:
-        that: neko_login_wrong.status == 401
-        fail_msg: "Neko answered {{ neko_login_wrong.status }} to a wrong password instead of 401"
-        success_msg: "Neko rejects a wrong password"
-
-    - name: Log in to Neko as an administrator
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/api/login"
-        method: POST
-        body_format: json
-        body:
-          username: molecule-admin
-          password: "{{ neko_expected_admin_password }}"
-        status_code: [200]
-        follow_redirects: none
-      register: neko_login_admin
-
-    - name: Assert the administrator password from the role logs in with admin rights
-      ansible.builtin.assert:
-        that:
-          - neko_login_admin.json.profile.is_admin
-          - neko_login_admin.json.token | length > 0
-        fail_msg: "Logging in with the configured administrator password did not produce an admin session"
-        success_msg: "The configured administrator password produces an admin session"
+    - name: Run the checks shared by all Neko scenarios (authentication)
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks_authentication.yml"
 
     # The mirror of the `default` scenario, which leaves the metrics off and asserts a 404.
     # Here `neko_container_labels_traefik_metrics_enabled` is on, the role renders

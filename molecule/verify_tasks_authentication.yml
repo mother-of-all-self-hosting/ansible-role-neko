@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Attempt to log in to Neko with a wrong password
+  ansible.builtin.uri:
+    url: "{{ neko_base_url }}/api/login"
+    method: POST
+    body_format: json
+    body:
+      username: molecule
+      password: definitely-not-the-password
+    status_code: [401]
+    follow_redirects: none
+  register: neko_login_wrong
+
+- name: Assert Neko rejects a wrong password
+  ansible.builtin.assert:
+    that: neko_login_wrong.status == 401
+    fail_msg: "Neko answered {{ neko_login_wrong.status }} to a wrong password instead of 401"
+    success_msg: "Neko rejects a wrong password"
+
+- name: Log in to Neko as an administrator
+  ansible.builtin.uri:
+    url: "{{ neko_base_url }}/api/login"
+    method: POST
+    body_format: json
+    body:
+      username: molecule-admin
+      password: "{{ neko_expected_admin_password }}"
+    status_code: [200]
+    follow_redirects: none
+  register: neko_login_admin
+
+- name: Assert the administrator password from the role logs in with admin rights
+  ansible.builtin.assert:
+    that:
+      - neko_login_admin.json.profile.is_admin
+      - neko_login_admin.json.token | length > 0
+    fail_msg: "Logging in with the configured administrator password did not produce an admin session"
+    success_msg: "The configured administrator password produces an admin session"

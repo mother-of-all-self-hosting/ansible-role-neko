@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 spatterlight
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# The role is not included in this playbook, so its defaults are not in
+# scope. Reading defaults/main.yml directly ties the version assertion
+# below.
+- name: Load the role defaults
+  ansible.builtin.include_vars:
+    file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+    name: neko_defaults
+
+- name: Wait for Neko service to become active (up to 180s)
+  ansible.builtin.systemd:
+    name: neko.service
+  register: neko_service
+  until: neko_service.status.ActiveState == 'active'
+  retries: 36
+  delay: 5
+
+# `Restart=always` keeps a crash-looping unit reporting `active`, so this is a
+# precondition for the checks below rather than a result in itself.
+- name: Assert Neko service is active
+  ansible.builtin.assert:
+    that: neko_service.status.ActiveState == 'active'
+    fail_msg: "neko.service not active ({{ neko_service.status.ActiveState }})"
+    success_msg: "neko.service is active"
+
+- name: Retrieve Neko service log for debugging
+  when: neko_debug_service_enabled | bool
+  ansible.builtin.command:
+    cmd: journalctl -xeu neko.service
+  changed_when: false
+
+############################################################################
+# The port the role was told to use, not the one baked into the image
+############################################################################
+
+- name: Wait for Neko to answer its health endpoint (up to 10m)
+  ansible.builtin.uri:
+    url: "{{ neko_base_url }}/health"
+    method: GET
+    status_code: [200]
+    follow_redirects: none
+    return_content: true
+  register: neko_health
+  until: neko_health.status == 200
+  retries: 120
+  delay: 5
+
+# The images ship `NEKO_SERVER_BIND=:8080`. Everything in this play talks to 8099,
+# which only answers because the role's env file overrode that; without the override
+# Neko would listen on 8080 inside the container and nothing would be behind the
+# published 8099.
+- name: Assert Neko reports itself healthy on the configured port
+  ansible.builtin.assert:
+    that: neko_health.content | trim == 'true'
+    fail_msg: "GET /health on port {{ neko_expected_http_port }} returned {{ neko_health.content | default('none') }}"
+    success_msg: "Neko is healthy on port {{ neko_expected_http_port }}"
+
+- name: Inspect the Neko container
+  ansible.builtin.command:
+    cmd: docker container inspect neko
+  register: neko_container_inspect_result
+  changed_when: false
