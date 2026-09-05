@@ -140,6 +140,26 @@
         fail_msg: "Neko answered {{ neko_login_wrong.status }} to a wrong password instead of 401"
         success_msg: "Neko rejects a wrong password"
 
+    - name: Log in to Neko as an administrator
+      ansible.builtin.uri:
+        url: "{{ neko_base_url }}/api/login"
+        method: POST
+        body_format: json
+        body:
+          username: molecule-admin
+          password: "{{ neko_expected_admin_password }}"
+        status_code: [200]
+        follow_redirects: none
+      register: neko_login_admin
+
+    - name: Assert the administrator password from the role logs in with admin rights
+      ansible.builtin.assert:
+        that:
+          - neko_login_admin.json.profile.is_admin
+          - neko_login_admin.json.token | length > 0
+        fail_msg: "Logging in with the configured administrator password did not produce an admin session"
+        success_msg: "The configured administrator password produces an admin session"
+
     # Neko reads its configuration with viper, which ignores an environment variable set
     # to an empty value; an unset password therefore silently restores Neko's compiled-in
     # `neko` / `admin` defaults instead of disabling authentication. If the role ever
@@ -168,26 +188,6 @@
       loop: "{{ neko_login_builtin.results }}"
       loop_control:
         label: "{{ item.item }}"
-
-    - name: Log in to Neko as an administrator
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/api/login"
-        method: POST
-        body_format: json
-        body:
-          username: molecule-admin
-          password: "{{ neko_expected_admin_password }}"
-        status_code: [200]
-        follow_redirects: none
-      register: neko_login_admin
-
-    - name: Assert the administrator password from the role logs in with admin rights
-      ansible.builtin.assert:
-        that:
-          - neko_login_admin.json.profile.is_admin
-          - neko_login_admin.json.token | length > 0
-        fail_msg: "Logging in with the configured administrator password did not produce an admin session"
-        success_msg: "The configured administrator password produces an admin session"
 
     - name: Log in to Neko as a regular user
       ansible.builtin.uri:
