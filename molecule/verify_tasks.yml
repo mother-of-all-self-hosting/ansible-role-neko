@@ -13,23 +13,27 @@
     file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
     name: neko_defaults
 
-- name: Wait for Neko service to become active (up to 180s)
-  ansible.builtin.systemd:
+- name: Wait for the Neko systemd service to become active (up to 180s)
+  ansible.builtin.systemd_service:
     name: neko.service
   register: neko_service
   until: neko_service.status.ActiveState == 'active'
   retries: 36
   delay: 5
+  # So that giving up is reported by the assertion below rather than as a
+  # wall of systemd unit properties.
+  failed_when: false
 
-# `Restart=always` keeps a crash-looping unit reporting `active`, so this is a
-# precondition for the checks below rather than a result in itself.
-- name: Assert Neko service is active
+# `Restart=always` in the systemd unit means that even a container which crashes
+# and gets restarted reads as active here, so this is a precondition rather than
+# a result.
+- name: Assert the Neko systemd service is active
   ansible.builtin.assert:
     that: neko_service.status.ActiveState == 'active'
-    fail_msg: "neko.service not active ({{ neko_service.status.ActiveState }})"
+    fail_msg: "neko.service is not active ({{ neko_service.status.ActiveState }})"
     success_msg: "neko.service is active"
 
-- name: Retrieve Neko service log for debugging
+- name: Retrieve the Neko systemd service log for debugging
   when: neko_debug_service_enabled | bool
   ansible.builtin.command:
     cmd: journalctl -xeu neko.service
