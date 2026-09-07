@@ -22,7 +22,7 @@
 
     - name: Parse the Neko container inspection
       ansible.builtin.set_fact:
-        neko_container_info: "{{ (neko_container_inspect_result.stdout | from_json)[0] }}"
+        neko_container_info: "{{ (neko_container_raw.stdout | from_json)[0] }}"
         # `neko_container_image_self_build_name` is derived from `neko_version` through
         # Jinja, so it cannot be read out of the role's defaults directly. Rebuild it here
         # from the leaf that Renovate edits.

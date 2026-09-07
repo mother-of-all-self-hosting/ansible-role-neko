@@ -64,5 +64,5 @@
 - name: Inspect the Neko container
   ansible.builtin.command:
     cmd: docker container inspect neko
-  register: neko_container_inspect_result
+  register: neko_container_raw
   changed_when: false

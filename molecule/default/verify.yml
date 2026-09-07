@@ -28,7 +28,7 @@
 
     - name: Parse the Neko container inspection
       ansible.builtin.set_fact:
-        neko_container_info: "{{ (neko_container_inspect_result.stdout | from_json)[0] }}"
+        neko_container_info: "{{ (neko_container_raw.stdout | from_json)[0] }}"
 
     - name: Assert the container environment carries the configured bind address
       ansible.builtin.assert:
