@@ -51,14 +51,14 @@
     - name: Inspect the Neko container image
       ansible.builtin.command:
         cmd: "docker image inspect {{ neko_container_info.Config.Image }}"
-      register: neko_image_inspect_result
+      register: neko_image_raw
       changed_when: false
 
     - name: Assert the running Neko is the version this role installs
       ansible.builtin.assert:
-        that: "(neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string"
-        fail_msg: "Neko reports {{ (neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
-        success_msg: "Neko reports {{ (neko_image_inspect_result.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] }}"
+        that: "(neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string"
+        fail_msg: "Neko reports {{ (neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
+        success_msg: "Neko reports {{ (neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] }}"
 
     ############################################################################
     # Authentication: the role's passwords, and not Neko's built-in ones
