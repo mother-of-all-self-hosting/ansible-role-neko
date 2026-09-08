@@ -36,7 +36,7 @@
 - name: Retrieve the Neko systemd service log for debugging
   when: neko_debug_service_enabled | bool
   ansible.builtin.command:
-    cmd: journalctl -xeu neko.service
+    cmd: journalctl --no-pager --output=cat --unit=neko.service
   changed_when: false
 
 ############################################################################
