@@ -18,89 +18,89 @@
   tasks:
     - name: Verify that Neko works
       block:
-    - name: Run the checks shared by all Neko scenarios
-      ansible.builtin.include_tasks:
-        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
+        - name: Run the checks shared by all Neko scenarios
+          ansible.builtin.include_tasks:
+            file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
 
-    - name: Parse the Neko container inspection
-      ansible.builtin.set_fact:
-        neko_container_info: "{{ (neko_container_raw.stdout | from_json)[0] }}"
-        # `neko_container_image_self_build_name` is derived from `neko_version` through
-        # Jinja, so it cannot be read out of the role's defaults directly. Rebuild it here
-        # from the leaf that Renovate edits.
-        neko_expected_self_built_image: "m1k1o/neko/firefox:v{{ neko_defaults.neko_version }}"
+        - name: Parse the Neko container inspection
+          ansible.builtin.set_fact:
+            neko_container_info: "{{ (neko_container_raw.stdout | from_json)[0] }}"
+            # `neko_container_image_self_build_name` is derived from `neko_version` through
+            # Jinja, so it cannot be read out of the role's defaults directly. Rebuild it here
+            # from the leaf that Renovate edits.
+            neko_expected_self_built_image: "m1k1o/neko/firefox:v{{ neko_defaults.neko_version }}"
 
-    - name: Assert the container runs the locally built image
-      ansible.builtin.assert:
-        that: neko_container_info.Config.Image == neko_expected_self_built_image
-        fail_msg: >-
-          The container runs {{ neko_container_info.Config.Image }},
-          not the self-built {{ neko_expected_self_built_image }}
-        success_msg: "The container runs the self-built {{ neko_expected_self_built_image }}"
+        - name: Assert the container runs the locally built image
+          ansible.builtin.assert:
+            that: neko_container_info.Config.Image == neko_expected_self_built_image
+            fail_msg: >-
+              The container runs {{ neko_container_info.Config.Image }},
+              not the self-built {{ neko_expected_self_built_image }}
+            success_msg: "The container runs the self-built {{ neko_expected_self_built_image }}"
 
-    - name: Inspect the Neko container image
-      ansible.builtin.command:
-        cmd: "docker image inspect {{ neko_expected_self_built_image }}"
-      register: neko_image_raw
-      changed_when: false
+        - name: Inspect the Neko container image
+          ansible.builtin.command:
+            cmd: "docker image inspect {{ neko_expected_self_built_image }}"
+          register: neko_image_raw
+          changed_when: false
 
-    - name: Parse the self-built image inspection
-      ansible.builtin.set_fact:
-        neko_image_info: "{{ (neko_image_raw.stdout | from_json)[0] }}"
+        - name: Parse the self-built image inspection
+          ansible.builtin.set_fact:
+            neko_image_info: "{{ (neko_image_raw.stdout | from_json)[0] }}"
 
-    # An image that was pulled carries the digest it was pulled by. One that was built
-    # here does not, which is what separates this scenario from the `default` one rather
-    # than merely trusting the name it was tagged with.
-    - name: Assert the image was built here rather than pulled
-      ansible.builtin.assert:
-        that: neko_image_info.RepoDigests | length == 0
-        fail_msg: "The image carries repository digests ({{ neko_image_info.RepoDigests }}), so it was pulled, not built"
-        success_msg: "The image carries no repository digest, so it was built on this host"
+        # An image that was pulled carries the digest it was pulled by. One that was built
+        # here does not, which is what separates this scenario from the `default` one rather
+        # than merely trusting the name it was tagged with.
+        - name: Assert the image was built here rather than pulled
+          ansible.builtin.assert:
+            that: neko_image_info.RepoDigests | length == 0
+            fail_msg: "The image carries repository digests ({{ neko_image_info.RepoDigests }}), so it was pulled, not built"
+            success_msg: "The image carries no repository digest, so it was built on this host"
 
-    # Neko's application Dockerfiles only install the browser; the server, and with it the
-    # version, comes from `ARG BASE_IMAGE`, whose upstream default is the floating
-    # `base:latest`. The role passes the pinned version instead, and the label inherited
-    # from that base is what proves it. Drop the build argument and this assert starts
-    # failing as soon as Neko publishes a release newer than the pinned one.
-    - name: Assert the running Neko is the version this role installs
-      ansible.builtin.assert:
-        that: neko_image_info.Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string
-        fail_msg: "Neko reports {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
-        success_msg: "Neko reports {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }}"
+        # Neko's application Dockerfiles only install the browser; the server, and with it the
+        # version, comes from `ARG BASE_IMAGE`, whose upstream default is the floating
+        # `base:latest`. The role passes the pinned version instead, and the label inherited
+        # from that base is what proves it. Drop the build argument and this assert starts
+        # failing as soon as Neko publishes a release newer than the pinned one.
+        - name: Assert the running Neko is the version this role installs
+          ansible.builtin.assert:
+            that: neko_image_info.Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string
+            fail_msg: "Neko reports {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
+            success_msg: "Neko reports {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }}"
 
-    ############################################################################
-    # The self-built image is a working Neko, configured by the role
-    ############################################################################
+        ############################################################################
+        # The self-built image is a working Neko, configured by the role
+        ############################################################################
 
-    - name: Run the checks shared by all Neko scenarios (authentication)
-      ansible.builtin.include_tasks:
-        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks_authentication.yml"
+        - name: Run the checks shared by all Neko scenarios (authentication)
+          ansible.builtin.include_tasks:
+            file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks_authentication.yml"
 
-    # The mirror of the `default` scenario, which leaves the metrics off and asserts a 404.
-    # Here `neko_container_labels_traefik_metrics_enabled` is on, the role renders
-    # NEKO_SERVER_METRICS=true, and the route has to be there.
-    - name: Read the Prometheus metrics endpoint, which this scenario enables
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/metrics"
-        method: GET
-        status_code: [200]
-        follow_redirects: none
-        return_content: true
-      register: neko_metrics
+        # The mirror of the `default` scenario, which leaves the metrics off and asserts a 404.
+        # Here `neko_container_labels_traefik_metrics_enabled` is on, the role renders
+        # NEKO_SERVER_METRICS=true, and the route has to be there.
+        - name: Read the Prometheus metrics endpoint, which this scenario enables
+          ansible.builtin.uri:
+            url: "{{ neko_base_url }}/metrics"
+            method: GET
+            status_code: [200]
+            follow_redirects: none
+            return_content: true
+          register: neko_metrics
 
-    - name: Assert the Prometheus metrics endpoint serves metrics
-      ansible.builtin.assert:
-        that: "'go_gc_duration_seconds' in neko_metrics.content"
-        fail_msg: "/metrics answered {{ neko_metrics.status }} but did not look like Prometheus output"
-        success_msg: "/metrics serves Prometheus metrics, as the role configured"
+        - name: Assert the Prometheus metrics endpoint serves metrics
+          ansible.builtin.assert:
+            that: "'go_gc_duration_seconds' in neko_metrics.content"
+            fail_msg: "/metrics answered {{ neko_metrics.status }} but did not look like Prometheus output"
+            success_msg: "/metrics serves Prometheus metrics, as the role configured"
 
-    - name: Show the Neko verification summary
-      ansible.builtin.debug:
-        msg:
-          - "Neko systemd: {{ neko_service.status.ActiveState }}"
-          - "Neko image: {{ neko_container_info.Config.Image }}"
-          - "Neko version label: {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }}"
-          - "Neko admin session: {{ neko_login_admin.json.id }}"
+        - name: Show the Neko verification summary
+          ansible.builtin.debug:
+            msg:
+              - "Neko systemd: {{ neko_service.status.ActiveState }}"
+              - "Neko image: {{ neko_container_info.Config.Image }}"
+              - "Neko version label: {{ neko_image_info.Config.Labels['org.opencontainers.image.version'] }}"
+              - "Neko admin session: {{ neko_login_admin.json.id }}"
 
       rescue:
         # Whatever went wrong, the reason is almost always in the systemd service log.

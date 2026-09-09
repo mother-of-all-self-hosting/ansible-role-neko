@@ -24,154 +24,154 @@
   tasks:
     - name: Verify that Neko works
       block:
-    - name: Run the checks shared by all Neko scenarios
-      ansible.builtin.include_tasks:
-        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
+        - name: Run the checks shared by all Neko scenarios
+          ansible.builtin.include_tasks:
+            file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
 
-    - name: Parse the Neko container inspection
-      ansible.builtin.set_fact:
-        neko_container_info: "{{ (neko_container_raw.stdout | from_json)[0] }}"
+        - name: Parse the Neko container inspection
+          ansible.builtin.set_fact:
+            neko_container_info: "{{ (neko_container_raw.stdout | from_json)[0] }}"
 
-    - name: Assert the container environment carries the configured bind address
-      ansible.builtin.assert:
-        that: "(('NEKO_SERVER_BIND=:' ~ neko_expected_http_port) in neko_container_info.Config.Env)"
-        fail_msg: "NEKO_SERVER_BIND=:{{ neko_expected_http_port }} is not in the container's environment"
-        success_msg: "The container's environment binds Neko to port {{ neko_expected_http_port }}"
+        - name: Assert the container environment carries the configured bind address
+          ansible.builtin.assert:
+            that: "(('NEKO_SERVER_BIND=:' ~ neko_expected_http_port) in neko_container_info.Config.Env)"
+            fail_msg: "NEKO_SERVER_BIND=:{{ neko_expected_http_port }} is not in the container's environment"
+            success_msg: "The container's environment binds Neko to port {{ neko_expected_http_port }}"
 
-    ############################################################################
-    # The version that is running is the version Renovate bumps
-    ############################################################################
+        ############################################################################
+        # The version that is running is the version Renovate bumps
+        ############################################################################
 
-    - name: Assert the container runs the image the role pins
-      ansible.builtin.assert:
-        that: neko_container_info.Config.Image == ('ghcr.io/m1k1o/neko/firefox:' ~ neko_defaults.neko_version)
-        fail_msg: >-
-          The container runs {{ neko_container_info.Config.Image }},
-          not ghcr.io/m1k1o/neko/firefox:{{ neko_defaults.neko_version }}
-        success_msg: "The container runs {{ neko_container_info.Config.Image }}"
+        - name: Assert the container runs the image the role pins
+          ansible.builtin.assert:
+            that: neko_container_info.Config.Image == ('ghcr.io/m1k1o/neko/firefox:' ~ neko_defaults.neko_version)
+            fail_msg: >-
+              The container runs {{ neko_container_info.Config.Image }},
+              not ghcr.io/m1k1o/neko/firefox:{{ neko_defaults.neko_version }}
+            success_msg: "The container runs {{ neko_container_info.Config.Image }}"
 
-    - name: Inspect the Neko container image
-      ansible.builtin.command:
-        cmd: "docker image inspect {{ neko_container_info.Config.Image }}"
-      register: neko_image_raw
-      changed_when: false
+        - name: Inspect the Neko container image
+          ansible.builtin.command:
+            cmd: "docker image inspect {{ neko_container_info.Config.Image }}"
+          register: neko_image_raw
+          changed_when: false
 
-    - name: Assert the running Neko is the version this role installs
-      ansible.builtin.assert:
-        that: "(neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string"
-        fail_msg: "Neko reports {{ (neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
-        success_msg: "Neko reports {{ (neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] }}"
+        - name: Assert the running Neko is the version this role installs
+          ansible.builtin.assert:
+            that: "(neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] == neko_defaults.neko_version | string"
+            fail_msg: "Neko reports {{ (neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] | default('none') }}, expected {{ neko_defaults.neko_version }}"
+            success_msg: "Neko reports {{ (neko_image_raw.stdout | from_json)[0].Config.Labels['org.opencontainers.image.version'] }}"
 
-    ############################################################################
-    # Authentication: the role's passwords, and not Neko's built-in ones
-    ############################################################################
+        ############################################################################
+        # Authentication: the role's passwords, and not Neko's built-in ones
+        ############################################################################
 
-    - name: Run the checks shared by all Neko scenarios (authentication)
-      ansible.builtin.include_tasks:
-        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks_authentication.yml"
+        - name: Run the checks shared by all Neko scenarios (authentication)
+          ansible.builtin.include_tasks:
+            file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks_authentication.yml"
 
-    # Neko reads its configuration with viper, which ignores an environment variable set
-    # to an empty value; an unset password therefore silently restores Neko's compiled-in
-    # `neko` / `admin` defaults instead of disabling authentication. If the role ever
-    # stopped writing the passwords, or wrote them empty, these two would start logging in
-    # and this task would fail.
-    - name: Attempt to log in to Neko with its built-in default passwords
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/api/login"
-        method: POST
-        body_format: json
-        body:
-          username: molecule
-          password: "{{ item }}"
-        status_code: [401]
-        follow_redirects: none
-      register: neko_login_builtin
-      loop:
-        - admin
-        - neko
+        # Neko reads its configuration with viper, which ignores an environment variable set
+        # to an empty value; an unset password therefore silently restores Neko's compiled-in
+        # `neko` / `admin` defaults instead of disabling authentication. If the role ever
+        # stopped writing the passwords, or wrote them empty, these two would start logging in
+        # and this task would fail.
+        - name: Attempt to log in to Neko with its built-in default passwords
+          ansible.builtin.uri:
+            url: "{{ neko_base_url }}/api/login"
+            method: POST
+            body_format: json
+            body:
+              username: molecule
+              password: "{{ item }}"
+            status_code: [401]
+            follow_redirects: none
+          register: neko_login_builtin
+          loop:
+            - admin
+            - neko
 
-    - name: Assert Neko's built-in default passwords do not work
-      ansible.builtin.assert:
-        that: item.status == 401
-        fail_msg: "Neko accepted its built-in default password; the role's password did not reach it"
-        success_msg: "Neko's built-in default passwords are not accepted"
-      loop: "{{ neko_login_builtin.results }}"
-      loop_control:
-        label: "{{ item.item }}"
+        - name: Assert Neko's built-in default passwords do not work
+          ansible.builtin.assert:
+            that: item.status == 401
+            fail_msg: "Neko accepted its built-in default password; the role's password did not reach it"
+            success_msg: "Neko's built-in default passwords are not accepted"
+          loop: "{{ neko_login_builtin.results }}"
+          loop_control:
+            label: "{{ item.item }}"
 
-    - name: Log in to Neko as a regular user
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/api/login"
-        method: POST
-        body_format: json
-        body:
-          username: molecule-user
-          password: "{{ neko_expected_user_password }}"
-        status_code: [200]
-        follow_redirects: none
-      register: neko_login_user
+        - name: Log in to Neko as a regular user
+          ansible.builtin.uri:
+            url: "{{ neko_base_url }}/api/login"
+            method: POST
+            body_format: json
+            body:
+              username: molecule-user
+              password: "{{ neko_expected_user_password }}"
+            status_code: [200]
+            follow_redirects: none
+          register: neko_login_user
 
-    - name: Assert the user password from the role logs in without admin rights
-      ansible.builtin.assert:
-        that: not neko_login_user.json.profile.is_admin
-        fail_msg: "The regular user password produced an admin session; the two passwords are not distinct"
-        success_msg: "The configured user password produces a non-admin session"
+        - name: Assert the user password from the role logs in without admin rights
+          ansible.builtin.assert:
+            that: not neko_login_user.json.profile.is_admin
+            fail_msg: "The regular user password produced an admin session; the two passwords are not distinct"
+            success_msg: "The configured user password produces a non-admin session"
 
-    ############################################################################
-    # Configuration reaches the process
-    ############################################################################
+        ############################################################################
+        # Configuration reaches the process
+        ############################################################################
 
-    - name: Read Neko's screen configuration
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/api/room/screen"
-        method: GET
-        headers:
-          Authorization: "Bearer {{ neko_login_admin.json.token }}"
-        status_code: [200]
-        follow_redirects: none
-      register: neko_screen
+        - name: Read Neko's screen configuration
+          ansible.builtin.uri:
+            url: "{{ neko_base_url }}/api/room/screen"
+            method: GET
+            headers:
+              Authorization: "Bearer {{ neko_login_admin.json.token }}"
+            status_code: [200]
+            follow_redirects: none
+          register: neko_screen
 
-    # `neko_environment_variables_neko_desktop_screen` is 1920x1080@30 in the role's
-    # defaults and 1280x720@25 in this scenario, so this can only pass if the value the
-    # scenario chose travelled through the env template into the running X server.
-    - name: Assert the screen configuration is the one this scenario asked for
-      ansible.builtin.assert:
-        that:
-          - neko_screen.json.width == neko_expected_screen_width
-          - neko_screen.json.height == neko_expected_screen_height
-          - neko_screen.json.rate == neko_expected_screen_rate
-        fail_msg: >-
-          Neko reports {{ neko_screen.json.width }}x{{ neko_screen.json.height }}@{{ neko_screen.json.rate }},
-          not {{ neko_expected_screen_width }}x{{ neko_expected_screen_height }}@{{ neko_expected_screen_rate }}
-        success_msg: >-
-          Neko runs at {{ neko_screen.json.width }}x{{ neko_screen.json.height }}@{{ neko_screen.json.rate }},
-          as configured
+        # `neko_environment_variables_neko_desktop_screen` is 1920x1080@30 in the role's
+        # defaults and 1280x720@25 in this scenario, so this can only pass if the value the
+        # scenario chose travelled through the env template into the running X server.
+        - name: Assert the screen configuration is the one this scenario asked for
+          ansible.builtin.assert:
+            that:
+              - neko_screen.json.width == neko_expected_screen_width
+              - neko_screen.json.height == neko_expected_screen_height
+              - neko_screen.json.rate == neko_expected_screen_rate
+            fail_msg: >-
+              Neko reports {{ neko_screen.json.width }}x{{ neko_screen.json.height }}@{{ neko_screen.json.rate }},
+              not {{ neko_expected_screen_width }}x{{ neko_expected_screen_height }}@{{ neko_expected_screen_rate }}
+            success_msg: >-
+              Neko runs at {{ neko_screen.json.width }}x{{ neko_screen.json.height }}@{{ neko_screen.json.rate }},
+              as configured
 
-    # Neko serves /metrics by default (`server.metrics` defaults to true). This scenario
-    # leaves `neko_container_labels_traefik_metrics_enabled` off, so the role renders
-    # NEKO_SERVER_METRICS=false and the route disappears. An instance running on image
-    # defaults - one the role never configured - would answer 200 here.
-    - name: Request the Prometheus metrics endpoint, which this scenario disables
-      ansible.builtin.uri:
-        url: "{{ neko_base_url }}/metrics"
-        method: GET
-        status_code: [404]
-        follow_redirects: none
-      register: neko_metrics
+        # Neko serves /metrics by default (`server.metrics` defaults to true). This scenario
+        # leaves `neko_container_labels_traefik_metrics_enabled` off, so the role renders
+        # NEKO_SERVER_METRICS=false and the route disappears. An instance running on image
+        # defaults - one the role never configured - would answer 200 here.
+        - name: Request the Prometheus metrics endpoint, which this scenario disables
+          ansible.builtin.uri:
+            url: "{{ neko_base_url }}/metrics"
+            method: GET
+            status_code: [404]
+            follow_redirects: none
+          register: neko_metrics
 
-    - name: Assert the Prometheus metrics endpoint is disabled
-      ansible.builtin.assert:
-        that: neko_metrics.status == 404
-        fail_msg: "/metrics answered {{ neko_metrics.status }}; NEKO_SERVER_METRICS=false did not reach Neko"
-        success_msg: "/metrics is disabled, as the role configured"
+        - name: Assert the Prometheus metrics endpoint is disabled
+          ansible.builtin.assert:
+            that: neko_metrics.status == 404
+            fail_msg: "/metrics answered {{ neko_metrics.status }}; NEKO_SERVER_METRICS=false did not reach Neko"
+            success_msg: "/metrics is disabled, as the role configured"
 
-    - name: Show the Neko verification summary
-      ansible.builtin.debug:
-        msg:
-          - "Neko systemd: {{ neko_service.status.ActiveState }}"
-          - "Neko image: {{ neko_container_info.Config.Image }}"
-          - "Neko screen: {{ neko_screen.json.width }}x{{ neko_screen.json.height }}@{{ neko_screen.json.rate }}"
-          - "Neko admin session: {{ neko_login_admin.json.id }}"
+        - name: Show the Neko verification summary
+          ansible.builtin.debug:
+            msg:
+              - "Neko systemd: {{ neko_service.status.ActiveState }}"
+              - "Neko image: {{ neko_container_info.Config.Image }}"
+              - "Neko screen: {{ neko_screen.json.width }}x{{ neko_screen.json.height }}@{{ neko_screen.json.rate }}"
+              - "Neko admin session: {{ neko_login_admin.json.id }}"
 
       rescue:
         # Whatever went wrong, the reason is almost always in the systemd service log.
