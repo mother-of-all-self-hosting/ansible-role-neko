@@ -13,13 +13,14 @@
     file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
     name: neko_defaults
 
-- name: Wait for the Neko systemd service to become active (up to 180s)
+- name: Wait for the Neko systemd services to become active (up to 180s each)
   ansible.builtin.systemd_service:
-    name: neko.service
-  register: neko_service
-  until: neko_service.status.ActiveState == 'active'
+    name: "{{ item }}"
+  register: neko_services
+  until: neko_services.status.ActiveState == 'active'
   retries: 36
   delay: 5
+  loop: "{{ neko_verify_units }}"
   # So that giving up is reported by the assertion below rather than as a
   # wall of systemd unit properties.
   failed_when: false
@@ -27,17 +28,20 @@
 # `Restart=always` in the systemd unit means that even a container which crashes
 # and gets restarted reads as active here, so this is a precondition rather than
 # a result.
-- name: Assert the Neko systemd service is active
+- name: Assert the Neko systemd services are active
   ansible.builtin.assert:
-    that: neko_service.status.ActiveState == 'active'
-    fail_msg: "neko.service is not active ({{ neko_service.status.ActiveState }})"
-    success_msg: "neko.service is active"
+    that: neko_services.results | map(attribute='status.ActiveState') | unique | list == ['active']
+    fail_msg: >-
+      Not every service is active:
+      {{ dict(neko_verify_units | zip(neko_services.results | map(attribute='status.ActiveState'))) }}
+    success_msg: "Every systemd service is active"
 
-- name: Retrieve the Neko systemd service log for debugging
+- name: Retrieve the Neko systemd services log for debugging
   when: neko_debug_service_enabled | bool
   ansible.builtin.command:
-    cmd: journalctl --no-pager --output=cat --unit=neko.service
+    cmd: "journalctl --no-pager --output=cat --unit={{ item }}"
   changed_when: false
+  loop: "{{ neko_verify_units }}"
 
 ############################################################################
 # The port the role was told to use, not the one baked into the image

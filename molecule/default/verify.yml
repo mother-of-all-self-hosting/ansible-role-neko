@@ -21,6 +21,9 @@
     neko_expected_admin_password: molecule-admin-9c71
     neko_base_url: "http://localhost:8099"
 
+    neko_verify_units:
+      - neko.service
+
   tasks:
     - name: Verify that Neko works
       block:
@@ -168,7 +171,7 @@
         - name: Show the Neko verification summary
           ansible.builtin.debug:
             msg:
-              - "Neko systemd: {{ neko_service.status.ActiveState }}"
+              - "Neko systemd: {% for unit, state in neko_verify_units | zip(neko_services.results | map(attribute='status.ActiveState')) %}{{ unit }} ({{ state }}){% if not loop.last %}, {% endif %}{% endfor %}"
               - "Neko image: {{ neko_container_info.Config.Image }}"
               - "Neko screen: {{ neko_screen.json.width }}x{{ neko_screen.json.height }}@{{ neko_screen.json.rate }}"
               - "Neko admin session: {{ neko_login_admin.json.id }}"
