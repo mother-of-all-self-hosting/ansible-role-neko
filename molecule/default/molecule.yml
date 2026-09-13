@@ -31,6 +31,7 @@ provisioner:
       all:
         # Helper variables
         neko_debug_service_enabled: false
+        neko_restarts_check_enabled: true
 
         # Variables for Neko
         neko_uid: 1000
