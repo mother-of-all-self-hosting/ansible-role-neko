@@ -156,6 +156,12 @@ neko_container_extra_arguments: "{{ neko_container_extra_arguments_auto + neko_c
 neko_container_extra_arguments_auto: []
 neko_container_extra_arguments_custom: []
 
+# A list of extra arguments to pass to the process inside the container
+# Example: ['--SOME_ARGUMENT']
+neko_process_extra_arguments: "{{ neko_process_extra_arguments_auto + neko_process_extra_arguments_custom }}"
+neko_process_extra_arguments_auto: []
+neko_process_extra_arguments_custom: []
+
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
 #
