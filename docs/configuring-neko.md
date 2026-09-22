@@ -30,7 +30,7 @@ See the project's [documentation](https://neko.m1k1o.net/docs/v3/introduction) t
 
 ## Prerequisites
 
-To use the service, by default you need to open ports `52000-52100/udp` of the host. That is the range which the role publishes for WebRTC, as set by the `neko_environment_variables_neko_webrtc_epr` variable. See [this section](https://neko.m1k1o.net/docs/v3/configuration/webrtc#epr) on the official documentation for details.
+To use the service, by default you need to open ports `52000-52100/udp` of the host. That is the range which the role publishes for WebRTC, as set by the `neko_environment_variables_neko_webrtc_epr` variable. Refer to [this section](https://neko.m1k1o.net/docs/v3/configuration/webrtc#epr) on the official documentation for details.
 
 ## Adjusting the playbook configuration
 
@@ -86,7 +86,7 @@ neko_environment_variables_neko_member_multiuser_user_password: USER_PASSWORD_HE
 
 #### Use another authentication method (optional)
 
-You can change the authentication method by setting `neko_environment_variables_neko_member_provider`. See [this section](https://neko.m1k1o.net/docs/v3/configuration/authentication#member) on the official documentation for the available methods.
+You can change the authentication method by setting `neko_environment_variables_neko_member_provider`. Refer to [this section](https://neko.m1k1o.net/docs/v3/configuration/authentication#member) on the official documentation for the available methods.
 
 ### Set a different port for the HTTP server (optional)
 
@@ -102,11 +102,11 @@ neko_container_image_app: "kde"
 
 By default, the instance is set to use Firefox as the application.
 
-See [this page](https://neko.m1k1o.net/docs/v3/installation/docker-images#apps) of the official documentation for the list of available applications.
+Refer to [this page](https://neko.m1k1o.net/docs/v3/installation/docker-images#apps) of the official documentation for the list of available applications.
 
 >[!WARNING]
 >
-> Setting a Chromium-based browser modifies shared memory size to 2 GB and enables `--cap-add=SYS_ADMIN`. See [this page](https://www.redhat.com/en/blog/container-tidbits-adding-capabilities-container) for the security implication of enabling it.
+> Setting a Chromium-based browser modifies shared memory size to 2 GB and enables `--cap-add=SYS_ADMIN`. Refer to [this page](https://www.redhat.com/en/blog/container-tidbits-adding-capabilities-container) for the security implication of enabling it.
 
 ### Build the container image locally (optional)
 
@@ -122,7 +122,7 @@ The Dockerfile of an application (Firefox, Chromium, KDE, …) only installs tha
 
 Neko can natively expose metrics to Prometheus.
 
-If you are looking for an integration, you can check out the MASH playbook. See [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/neko.md#integrating-with-prometheus-optional) for more information.
+If you are looking for an integration, you can check out the MASH playbook. Refer to [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/neko.md#integrating-with-prometheus-optional) for more information.
 
 ### Extending the configuration
 
