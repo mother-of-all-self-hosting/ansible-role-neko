@@ -51,14 +51,16 @@
           ansible.builtin.set_fact:
             neko_image_info: "{{ (neko_image_raw.stdout | from_json)[0] }}"
 
-        # An image that was pulled carries the digest it was pulled by. One that was built
-        # here does not, which is what separates this scenario from the `default` one rather
-        # than merely trusting the name it was tagged with.
+        # An image that was pulled carries the time upstream built it. One that was built
+        # here was created during this test run, which is what separates this scenario from
+        # the `default` one rather than merely trusting the name it was tagged with.
+        # Repository digests cannot tell the two apart: Docker's containerd image store
+        # records one for local builds too.
         - name: Assert the image was built here rather than pulled
           ansible.builtin.assert:
-            that: neko_image_info.RepoDigests | length == 0
-            fail_msg: "The image carries repository digests ({{ neko_image_info.RepoDigests }}), so it was pulled, not built"
-            success_msg: "The image carries no repository digest, so it was built on this host"
+            that: (now(utc=true) - (neko_image_info.Created[:19] | to_datetime('%Y-%m-%dT%H:%M:%S'))).total_seconds() < 3600
+            fail_msg: "The image was created at {{ neko_image_info.Created }}, not during this test run, so it was pulled, not built"
+            success_msg: "The image was created during this test run, so it was built on this host"
 
         # Neko's application Dockerfiles only install the browser; the server, and with it the
         # version, comes from `ARG BASE_IMAGE`, whose upstream default is the floating
