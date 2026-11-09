@@ -21,7 +21,7 @@ traefik.http.middlewares.{{ neko_identifier }}-basic-auth.basicauth.users={{ nek
 {% endif %}
 
 {% if neko_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.{{ neko_identifier }}-slashless-redirect.redirectregex.regex=^({{ neko_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.{{ neko_identifier }}-slashless-redirect.redirectregex.regex=^(https?://[^/]+{{ neko_container_labels_traefik_path_prefix | regex_escape }})$
 traefik.http.middlewares.{{ neko_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
 {% set middlewares = middlewares + [neko_identifier + '-slashless-redirect'] %}
 {% endif %}
