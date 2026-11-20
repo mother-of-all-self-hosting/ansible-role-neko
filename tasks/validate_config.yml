@@ -31,9 +31,6 @@
   with_items:
     - neko_uid
     - neko_gid
-    - neko_hostname
-    - neko_path_prefix
-    - neko_container_network
 
 - name: Fail if Neko member provider is invalid
   ansible.builtin.fail:
