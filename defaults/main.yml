@@ -255,6 +255,20 @@ neko_container_cleanup_command: |
 # Specify the timezone
 neko_environment_variables_tz: UTC
 
+# Specify room configurations
+# See: https://neko.m1k1o.net/docs/v3/configuration#session
+neko_environment_variables_neko_session_private_mode: false
+neko_environment_variables_neko_session_locked_logins: false
+neko_environment_variables_neko_session_locked_controls: false
+neko_environment_variables_neko_session_control_protection: false
+neko_environment_variables_neko_session_implicit_hosting: false
+neko_environment_variables_neko_session_inactive_cursors: false
+neko_environment_variables_neko_session_merciful_reconnect: true
+
+# Specify a file path to store a session.
+# See: https://neko.m1k1o.net/docs/v3/configuration/authentication#session
+neko_environment_variables_neko_session_file: ""
+
 # Specify the screen resolution and refresh rate.
 # See: https://neko.m1k1o.net/docs/v3/configuration/desktop
 neko_environment_variables_neko_desktop_screen: '1920x1080@30'
@@ -277,7 +291,8 @@ neko_environment_variables_neko_member_provider: multiuser
 # Leaving this empty does NOT disable password authentication. Neko reads its configuration
 # with viper, which ignores environment variables that are set to an empty value, so an empty
 # value here makes Neko fall back to its own built-in default password (`neko`).
-# The role therefore refuses to install with the `multiuser` member provider and an empty password.
+# The role therefore refuses to install with the `multiuser` member provider and an empty password,
+# if `neko_environment_variables_neko_session_locked_logins` is set to `false`.
 neko_environment_variables_neko_member_multiuser_user_password: ""
 
 # Specify password for admins.
@@ -296,10 +311,6 @@ neko_environment_variables_neko_member_file_hash: false
 
 # Specify list of users with their passwords and profiles in JSON encoded array.
 neko_environment_variables_neko_member_object_users: ""
-
-# Specify a file path to store a session.
-# See: https://neko.m1k1o.net/docs/v3/configuration/authentication#session
-neko_environment_variables_neko_session_file: ""
 
 neko_environment_variables_neko_webrtc_epr: '52000-52100'
 neko_environment_variables_neko_webrtc_icelite: '1'

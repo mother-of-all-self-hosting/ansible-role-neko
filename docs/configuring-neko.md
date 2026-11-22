@@ -66,33 +66,41 @@ After adjusting the hostname, make sure to adjust your DNS records to point the 
 
 **Note**: hosting Neko under a subpath (by configuring the `neko_path_prefix` variable) does not seem to be possible due to Neko's technical limitations.
 
-### Configuring authentication
+### Configure authentication
 
 #### Set password for admin and regular users
 
-By default the instance is configured to authenticate administrators and regular users with passwords.
+By default the instance is configured to authenticate administrators and regular users (if enabled) with passwords.
 
 To specify the passwords, add the following configuration to your `vars.yml` file. Make sure to replace `ADMIN_PASSWORD_HERE` and `USER_PASSWORD_HERE` with your own values.
 
 ```yaml
 neko_environment_variables_neko_member_multiuser_admin_password: ADMIN_PASSWORD_HERE
 
+# Required only if logging in as a regular user is enabled
 neko_environment_variables_neko_member_multiuser_user_password: USER_PASSWORD_HERE
 ```
 
-> [!WARNING]
->
-> Both passwords are required, and the role refuses to install without them. Leaving one empty does **not** turn authentication off. Neko reads its configuration with [viper](https://github.com/spf13/viper), which ignores an environment variable that is set to an empty value, so an empty password makes Neko fall back to its own built-in defaults — `neko` for regular users and `admin` for administrators. Anyone who could reach the instance would then be able to take control of the browser running on your server.
+>[!WARNING]
+> Leaving one empty does **not** turn authentication off. Neko reads its configuration with [viper](https://github.com/spf13/viper), which ignores an environment variable that is set to an empty value, so an empty password makes Neko fall back to its own built-in defaults — `neko` for regular users and `admin` for administrators. Anyone who could reach the instance would then be able to take control of the browser running on your server.
 
 #### Use another authentication method (optional)
 
 You can change the authentication method by setting `neko_environment_variables_neko_member_provider`. Refer to [this section](https://neko.m1k1o.net/docs/v3/configuration/authentication#member) on the official documentation for the available methods.
 
-### Set a different port for the HTTP server (optional)
+### Disabling log in with regular users (optional)
+
+If you do not want to enable logging in as regular users, it is possible to disable it by adding the following configuration to your `vars.yml` file:
+
+```yaml
+neko_environment_variables_neko_session_locked_logins: true
+```
+
+### Setting a different port for the HTTP server (optional)
 
 The service listens on port `8080` inside its container. If that clashes with something else in your setup, you can change it with the `neko_container_http_port` variable; the role passes it on to Neko, publishes it and points the Traefik labels at it.
 
-### Select an application (optional)
+### Selecting an application (optional)
 
 There are multiple applications available to use on the Neko's instance. For example, by adding the following configuration to your `vars.yml` file you can set up KDE desktop environment in a container where you can run multiple applications:
 
@@ -105,10 +113,9 @@ By default, the instance is set to use Firefox as the application.
 Refer to [this page](https://neko.m1k1o.net/docs/v3/installation/docker-images#apps) of the official documentation for the list of available applications.
 
 >[!WARNING]
->
 > Setting a Chromium-based browser modifies shared memory size to 2 GB and enables `--cap-add=SYS_ADMIN`. Refer to [this page](https://www.redhat.com/en/blog/container-tidbits-adding-capabilities-container) for the security implication of enabling it.
 
-### Build the container image locally (optional)
+### Building the container image locally (optional)
 
 Instead of pulling a published image, the role can build one on the server from Neko's own sources:
 
