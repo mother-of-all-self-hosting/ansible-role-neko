@@ -269,6 +269,11 @@ neko_environment_variables_neko_session_merciful_reconnect: true
 # See: https://neko.m1k1o.net/docs/v3/configuration/authentication#session
 neko_environment_variables_neko_session_file: ""
 
+# Specify server configurations
+# See: https://neko.m1k1o.net/docs/v3/configuration#server
+neko_environment_variables_neko_server_metrics: "{{ neko_container_labels_traefik_metrics_enabled }}"
+neko_environment_variables_neko_server_proxy: "{{ neko_container_labels_traefik_enabled }}"
+
 # Specify the screen resolution and refresh rate.
 # See: https://neko.m1k1o.net/docs/v3/configuration/desktop
 neko_environment_variables_neko_desktop_screen: '1920x1080@30'
