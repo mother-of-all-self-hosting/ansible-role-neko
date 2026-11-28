@@ -61,6 +61,7 @@
         owner: "{{ neko_uid }}"
         group: "{{ neko_gid }}"
         recurse: true
+      tags: molecule-idempotence-notest
 
     - name: Ensure Neko repository is present on self-build
       ansible.builtin.git:
